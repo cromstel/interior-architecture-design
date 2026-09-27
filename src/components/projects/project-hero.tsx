@@ -2,6 +2,7 @@ import type { Project } from '@/data/projects'
 import { site } from '@/data/config'
 import { lg } from '@/lib/image-variants'
 import { ProjectHeroBanner } from '@/components/projects/project-hero-banner'
+import { Breadcrumbs } from '@/components/breadcrumbs'
 
 /**
  * Server component: resolves the `-lg` hero variant on disk (client-safe
@@ -18,10 +19,21 @@ export function ProjectHero({ project }: { project: Project }) {
         index={project.index}
         title={project.title}
         location={project.location}
+        category={project.category}
+        year={project.year}
+        area={project.area}
       />
 
       <div className="border-t border-ink/10">
         <div className="max-w-7xl px-6 py-8 md:px-10 md:py-12">
+          <Breadcrumbs
+            className="mb-8"
+            items={[
+              { label: 'Studio', href: '/' },
+              { label: 'Selected Work', href: '/#projects' },
+              { label: project.title },
+            ]}
+          />
           <div className="flex flex-wrap gap-x-10 gap-y-6">
             <MetaCell label="Location" value={project.location} className="hidden md:block" />
             <MetaCell label="Category" value={project.category} />

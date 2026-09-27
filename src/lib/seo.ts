@@ -6,8 +6,11 @@ type SeoOptions = {
   description: string
   path?: string
   ogImage?: string
+  ogImageAlt?: string
   ogType?: 'website' | 'article'
   publishedTime?: string
+  /** Per-page keywords, derived from the entry's own data. */
+  keywords?: string[]
 }
 
 export function buildMeta({
@@ -15,13 +18,17 @@ export function buildMeta({
   description,
   path = '/',
   ogImage,
+  ogImageAlt,
   ogType = 'website',
   publishedTime,
+  keywords,
 }: SeoOptions): Metadata {
   const image = ogImage ?? '/images/og/og-citgroup-and-vale.jpg'
+  const imageAlt = ogImageAlt ?? title
   return {
     title,
     description,
+    ...(keywords && keywords.length ? { keywords } : {}),
     alternates: { canonical: resolveUrl(path) },
     openGraph: {
       title,
@@ -30,7 +37,7 @@ export function buildMeta({
       siteName: 'Citgroup & Vale',
       locale: 'en_US',
       type: ogType,
-      images: [{ url: assetUrl(image), width: 1200, height: 630, alt: title }],
+      images: [{ url: assetUrl(image), width: 1200, height: 630, alt: imageAlt }],
       ...(publishedTime ? { publishedTime } : {}),
     },
     twitter: {

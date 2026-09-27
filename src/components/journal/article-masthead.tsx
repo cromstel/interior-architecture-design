@@ -2,6 +2,8 @@
 
 import { motion, useReducedMotion } from 'framer-motion'
 import { HeroBackdrop, HeroScrim } from '@/components/hero-backdrop'
+import { readingTime } from '@/lib/derived'
+import type { JournalEntry } from '@/data/journal'
 
 const EASE = [0.16, 1, 0.3, 1] as const
 
@@ -12,6 +14,9 @@ type ArticleMastheadProps = {
   excerpt: string
   src: string
   alt: string
+  /** Word count and reading time, derived from the article's own copy. */
+  words?: number
+  minutes?: number
 }
 
 /**
@@ -30,6 +35,8 @@ export function ArticleMasthead({
   excerpt,
   src,
   alt,
+  words,
+  minutes,
 }: ArticleMastheadProps) {
   const reduced = useReducedMotion()
 
@@ -56,6 +63,20 @@ export function ArticleMasthead({
               ·
             </span>
             {date}
+            {typeof minutes === 'number' && (
+              <>
+                <span className="mx-3" aria-hidden>
+                  ·
+                </span>
+                {minutes} min read
+                {typeof words === 'number' && (
+                  <span className="mx-3" aria-hidden>
+                    ·
+                  </span>
+                )}
+                {typeof words === 'number' && `${words.toLocaleString('en-US')} words`}
+              </>
+            )}
           </p>
           <h1 className="mt-4 max-w-4xl text-balance font-display text-[clamp(2rem,5.6vw,4.8rem)] font-light leading-[1.03] tracking-[-0.015em] text-chalk">
             {title}

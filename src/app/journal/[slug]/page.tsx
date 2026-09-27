@@ -6,6 +6,9 @@ import { ArticleNav } from '@/components/journal/article-nav'
 import { buildMeta } from '@/lib/seo'
 import { notFound } from 'next/navigation'
 import { lg } from '@/lib/image-variants'
+import { relatedEntries } from '@/lib/derived'
+import { articleJsonLd } from '@/lib/schema'
+import { RelatedEntries } from '@/components/related-content'
 
 export const dynamicParams = false
 
@@ -28,8 +31,16 @@ export async function generateMetadata({
     // Social crawlers do not reliably render AVIF, so share the generated
     // 1200x630 JPEG card rather than the page's own hero.
     ogImage: `/images/og/${entry.slug}.jpg`,
+    ogImageAlt: `${entry.title} — ${entry.category}. A journal entry from citgroup & Vale.`,
     ogType: 'article',
     publishedTime: entry.dateISO,
+    keywords: [
+      entry.title,
+      entry.category,
+      'interior design journal',
+      'New York interior designer',
+      'citgroup & Vale',
+    ],
   })
 }
 
@@ -57,7 +68,12 @@ export default async function JournalPage({
       />
       <ArticleHero entry={entry} />
       <ArticleBody entry={entry} />
+      <RelatedEntries items={relatedEntries(entry, journalEntries(), 2)} />
       <ArticleNav slug={entry.slug} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd(entry)) }}
+      />
     </article>
   )
 }

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, Inter } from 'next/font/google'
 import { site } from '@/data/config'
 import { siteConfig } from '@/lib/site-config'
+import { siteGraph } from '@/lib/schema'
 import { Navigation } from '@/components/navigation'
 import { Footer } from '@/components/footer'
 import { BackToTop } from '@/components/back-to-top'
@@ -122,18 +123,11 @@ const jsonLd = {
       },
       telephone: site.phone.display,
     },
-    {
-      '@type': 'BreadcrumbList',
-      '@id': `${siteConfig.baseUrl}/#breadcrumb`,
-      itemListElement: [
-        {
-          '@type': 'ListItem',
-          position: 1,
-          name: 'Citgroup & Vale',
-          item: siteConfig.baseUrl,
-        },
-      ],
-    },
+    // Site-level nodes (WebSite, Organization). A static site-root
+    // BreadcrumbList used to live here; it only ever described the homepage
+    // and would have conflicted with the per-page trails, which now cover
+    // every route that has a hierarchy.
+    ...siteGraph(),
   ],
 }
 

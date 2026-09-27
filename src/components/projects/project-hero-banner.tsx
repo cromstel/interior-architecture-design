@@ -11,6 +11,9 @@ type ProjectHeroBannerProps = {
   index: string
   title: string
   location: string
+  category: string
+  year: string
+  area: string
 }
 
 /**
@@ -26,6 +29,9 @@ export function ProjectHeroBanner({
   index,
   title,
   location,
+  category,
+  year,
+  area,
 }: ProjectHeroBannerProps) {
   const reduced = useReducedMotion()
 
@@ -48,8 +54,22 @@ export function ProjectHeroBanner({
           <h1 className="mt-3 max-w-5xl text-balance font-display text-[clamp(2.2rem,6.4vw,5.6rem)] font-light leading-[0.98] tracking-[-0.015em] text-chalk">
             {title}
           </h1>
-          <p className="mt-4 font-sans text-[11px] font-light uppercase tracking-[var(--tracking-meta)] text-chalk/80">
+          {/* At a glance: the facts a reader wants before scrolling, drawn
+              from the same data as the ledger below the banner. */}
+          <p className="mt-5 font-sans text-[10px] font-light uppercase leading-loose tracking-[var(--tracking-meta)] text-chalk/75">
             {location}
+            <span className="mx-2" aria-hidden>
+              ·
+            </span>
+            {category}
+            <span className="mx-2" aria-hidden>
+              ·
+            </span>
+            {year}
+            <span className="mx-2" aria-hidden>
+              ·
+            </span>
+            {area}
           </p>
         </div>
       </motion.div>

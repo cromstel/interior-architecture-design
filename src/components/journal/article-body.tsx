@@ -4,6 +4,7 @@ import { MaskedImage } from '@/components/motion/masked-image'
 import { FadeIn } from '@/components/motion/fade-in'
 import { AnimatedRule } from '@/components/motion/animated-rule'
 import { lg } from '@/lib/image-variants'
+import { slugify } from '@/lib/derived'
 
 const captionClass =
   'pt-3 font-sans text-[10px] font-light uppercase tracking-[var(--tracking-meta)] text-stone'
@@ -35,7 +36,7 @@ export function ArticleBody({ entry }: { entry: JournalEntry }) {
             }
             case 'heading':
               return (
-                <div key={i} className="mx-auto max-w-2xl pt-4">
+                <div key={i} className="mx-auto max-w-2xl scroll-mt-28 pt-4" id={slugify(block.text)}>
                   <AnimatedRule className="mb-8 w-16" />
                   <h2 className="font-display text-[clamp(1.6rem,3.2vw,2.4rem)] font-light leading-tight tracking-[-0.01em] text-ink">
                     {block.text}

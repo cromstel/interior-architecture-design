@@ -85,7 +85,17 @@ export function Footer() {
           <p>
             © {new Date().getFullYear()} {site.name}. All rights reserved.
           </p>
-          <p>Photography via Unsplash</p>
+          <p>
+            Powered By{' '}
+            <a
+              href="https://cromstelit.com"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="transition-colors hover:text-chalk"
+            >
+              CITGROUP
+            </a>
+          </p>
         </div>
       </div>
     </footer>

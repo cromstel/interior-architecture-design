@@ -13,6 +13,8 @@ type RevealTextProps = {
   text: string
   as?: 'h1' | 'h2' | 'h3' | 'p' | 'span'
   className?: string
+  /** Fragment id, so the heading can be linked to and used to label a region. */
+  id?: string
   delay?: number
   stagger?: number
   once?: boolean
@@ -27,6 +29,7 @@ export function RevealText({
   text,
   as: Tag = 'span',
   className,
+  id,
   delay = 0,
   stagger = 0.06,
   once = true,
@@ -35,11 +38,15 @@ export function RevealText({
   const words = text.split(' ')
 
   if (reduced || noViewportAPI) {
-    return <Tag className={className}>{text}</Tag>
+    return (
+      <Tag className={className} id={id}>
+        {text}
+      </Tag>
+    )
   }
 
   return (
-    <Tag className={className} aria-label={text}>
+    <Tag className={className} id={id} aria-label={text}>
       <span aria-hidden className="inline">
         {words.map((word, i) => (
           <span key={i} className="inline-block overflow-hidden pb-[0.12em] -mb-[0.12em]">
