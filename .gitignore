@@ -13,3 +13,6 @@ thoughts/
 prompts/
 AGENTS.md
 CLAUDE.md
+
+# Local deploy output/scratch — not published
+deploy/
