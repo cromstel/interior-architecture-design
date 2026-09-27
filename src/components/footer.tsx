@@ -2,21 +2,26 @@ import Link from 'next/link'
 import { site } from '@/data/config'
 import { navLinks } from '@/data/site'
 
+/**
+ * Site footer. Centred throughout: the wordmark and descriptor sit on the
+ * axis, the three link groups share an even three-column row beneath, and the
+ * legal line is centred rather than split to the corners. The hairline rules,
+ * meta labels and the oversized ghost wordmark carry the same editorial
+ * language as the rest of the site.
+ */
 export function Footer() {
   return (
     <footer className="bg-ink text-chalk">
-      <div className="px-6 pt-24 md:px-10 md:pt-32">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-14 md:grid-cols-12">
-          <div className="col-span-2 md:col-span-5">
-            <Link href="/" className="wordmark text-chalk">
-              citgroup&nbsp;&amp; VALE
-            </Link>
-            <p className="mt-4 font-display text-2xl font-light italic leading-snug text-chalk/80 md:max-w-xs">
-              {site.descriptor} in {site.city}.
-            </p>
-          </div>
+      <div className="px-6 pt-24 text-center md:px-10 md:pt-32">
+        <Link href="/" className="wordmark text-chalk">
+          citgroup&nbsp;&amp; VALE
+        </Link>
+        <p className="mx-auto mt-4 max-w-md font-display text-2xl font-light italic leading-snug text-chalk/80">
+          {site.descriptor} in {site.city}.
+        </p>
 
-          <div className="md:col-span-3">
+        <div className="mx-auto mt-16 grid max-w-4xl gap-y-14 md:mt-20 md:grid-cols-3 md:gap-x-10">
+          <div>
             <p className="meta-label mb-6">Studio</p>
             <address className="space-y-1.5 font-sans text-sm font-light not-italic leading-relaxed text-chalk/75">
               <p>{site.address.street}</p>
@@ -34,7 +39,7 @@ export function Footer() {
             </address>
           </div>
 
-          <div className="md:col-span-2">
+          <div>
             <p className="meta-label mb-6">Index</p>
             <ul className="space-y-2.5 font-sans text-sm font-light text-chalk/75">
               {navLinks.map((link) => (
@@ -47,7 +52,7 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="md:col-span-2">
+          <div>
             <p className="meta-label mb-6">Social</p>
             <ul className="space-y-2.5 font-sans text-sm font-light text-chalk/75">
               {[site.social.instagram, site.social.pinterest, site.social.linkedin].map((s) => (
@@ -76,7 +81,7 @@ export function Footer() {
           </p>
         </div>
 
-        <div className="flex flex-col gap-2 border-t border-chalk/15 py-6 font-sans text-[10px] uppercase tracking-[var(--tracking-meta)] text-chalk/55 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col items-center gap-2 border-t border-chalk/15 py-6 text-center font-sans text-[10px] uppercase tracking-[var(--tracking-meta)] text-chalk/55">
           <p>
             © {new Date().getFullYear()} {site.name}. All rights reserved.
           </p>

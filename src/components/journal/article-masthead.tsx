@@ -1,8 +1,7 @@
 'use client'
 
 import { motion, useReducedMotion } from 'framer-motion'
-import { AnimatedRule } from '@/components/motion/animated-rule'
-import { MaskedImage } from '@/components/motion/masked-image'
+import { HeroBackdrop, HeroScrim } from '@/components/hero-backdrop'
 
 const EASE = [0.16, 1, 0.3, 1] as const
 
@@ -16,12 +15,13 @@ type ArticleMastheadProps = {
 }
 
 /**
- * Journal masthead: a print-style two-column opening — title block on the
- * left, a portrait-cropped plate on the right, divided by a single vertical
- * hairline. Deliberately not an overlaid banner: the article reads as a page,
- * not as a poster, and the image sits in the grid rather than bleeding to the
- * edges. The plate keeps one fixed crop across every entry so the journal
- * pages stay consistent regardless of each entry's source ratio.
+ * Journal masthead: a full-bleed banner carrying the entry's hero as a
+ * background, with the title plate anchored to the lower left beneath a
+ * legibility scrim.
+ *
+ * Shorter and more restrained than the project banner so an article still
+ * opens as a page rather than a poster, and the excerpt is held to a narrower
+ * measure than the project title to keep the two templates distinguishable.
  */
 export function ArticleMasthead({
   category,
@@ -34,47 +34,37 @@ export function ArticleMasthead({
   const reduced = useReducedMotion()
 
   return (
-    <header className="px-6 pt-32 md:px-10 md:pt-40">
-      <div className="mx-auto max-w-7xl">
-        <div className="grid gap-12 md:grid-cols-12 md:gap-0">
-          <motion.div
-            className="md:col-span-7 md:pr-10 lg:pr-16"
-            initial={reduced ? false : { opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: EASE, delay: 0.1 }}
-          >
-            <p className="meta-label">
-              {category}
-              <span className="mx-3" aria-hidden>
-                ·
-              </span>
-              {date}
-            </p>
-            <h1 className="mt-6 max-w-3xl text-balance font-display text-[clamp(2.2rem,5.4vw,4.9rem)] font-light leading-[1.02] tracking-[-0.015em] text-ink">
-              {title}
-            </h1>
-            <AnimatedRule className="mt-8 w-24 md:mt-10" />
-            <p className="mt-6 max-w-xl font-sans text-sm font-light leading-relaxed text-stone md:text-base">
-              {excerpt}
-            </p>
-          </motion.div>
+    <header className="relative h-[62svh] min-h-[420px] overflow-hidden bg-ink md:h-[78svh] md:min-h-[540px]">
+      <HeroBackdrop src={src} alt={alt} amount={0.07} />
 
-          <motion.figure
-            className="md:col-span-5 md:border-l md:border-ink/10 md:pl-10 lg:pl-16"
-            initial={reduced ? false : { opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: EASE, delay: 0.25 }}
-          >
-            <MaskedImage
-              src={src}
-              alt={alt}
-              className="aspect-[4/5] w-full md:aspect-[3/4]"
-              priority
-              sizes="(min-width: 1280px) 470px, (min-width: 768px) 44vw, 92vw"
-            />
-          </motion.figure>
+      <HeroScrim
+        direction="to top left"
+        stops="rgba(10,9,7,0.84) 0%, rgba(10,9,7,0.62) 32%, rgba(10,9,7,0.36) 64%, rgba(10,9,7,0.40) 100%"
+      />
+
+      <motion.div
+        className="relative z-10 flex h-full flex-col justify-end px-6 pb-10 pt-28 md:px-10 md:pb-14"
+        initial={reduced ? false : { opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: EASE, delay: 0.15 }}
+      >
+        {/* Left-anchored column, so the excerpt keeps a readable measure. */}
+        <div>
+          <p className="font-sans text-[11px] font-light uppercase tracking-[var(--tracking-meta)] text-chalk/80">
+            {category}
+            <span className="mx-3" aria-hidden>
+              ·
+            </span>
+            {date}
+          </p>
+          <h1 className="mt-4 max-w-4xl text-balance font-display text-[clamp(2rem,5.6vw,4.8rem)] font-light leading-[1.03] tracking-[-0.015em] text-chalk">
+            {title}
+          </h1>
+          <p className="mt-5 max-w-xl font-sans text-sm font-light leading-relaxed text-chalk/80 md:text-base">
+            {excerpt}
+          </p>
         </div>
-      </div>
+      </motion.div>
     </header>
   )
 }

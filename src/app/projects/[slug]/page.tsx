@@ -40,8 +40,19 @@ export default async function ProjectPage({
   const project = getProject(slug)
   if (!project) notFound()
 
+  const heroBase = project.hero.src.replace(/-lg\.(avif|webp|jpe?g|png)$/i, '.$1')
+  const heroLg = lg(project.hero.src)
+
   return (
     <article>
+      {/* Explicit preload: the banner is a CSS background, so React does not
+          emit one automatically. */}
+      <link
+        rel="preload"
+        as="image"
+        imageSrcSet={`${heroBase} 1200w, ${heroLg} 2000w`}
+        imageSizes="100vw"
+      />
       <ProjectHero project={project} />
       <ProjectSequence project={project} />
       <ProjectPrevNext project={project} />

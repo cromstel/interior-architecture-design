@@ -4,11 +4,21 @@ import { navLinks } from '@/data/site'
 import { NotFoundHero } from '@/components/not-found-hero'
 
 export default function NotFound() {
+  const heroBase = '/images/hero/hero-404.avif'
+  const heroLg = lg(heroBase)
+
   return (
     <>
       {/* `lg()` is resolved here, in the server component, so the client hero
-          never pulls in node:fs. */}
-      <NotFoundHero src={lg('/images/hero/hero-404.avif')} />
+          never pulls in node:fs. The banner is a CSS background, so the LCP
+          image is preloaded explicitly. */}
+      <link
+        rel="preload"
+        as="image"
+        imageSrcSet={`${heroBase} 1200w, ${heroLg} 2000w`}
+        imageSizes="100vw"
+      />
+      <NotFoundHero src={heroLg} />
 
       <section className="px-6 py-16 md:px-10 md:py-24">
         <div className="mx-auto max-w-7xl">

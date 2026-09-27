@@ -42,8 +42,19 @@ export default async function JournalPage({
   const entry = getJournalEntry(slug)
   if (!entry) notFound()
 
+  const heroBase = entry.hero.src.replace(/-lg\.(avif|webp|jpe?g|png)$/i, '.$1')
+  const heroLg = lg(entry.hero.src)
+
   return (
     <article>
+      {/* Explicit preload: the masthead is a CSS background, so React does not
+          emit one automatically. */}
+      <link
+        rel="preload"
+        as="image"
+        imageSrcSet={`${heroBase} 1200w, ${heroLg} 2000w`}
+        imageSizes="100vw"
+      />
       <ArticleHero entry={entry} />
       <ArticleBody entry={entry} />
       <ArticleNav slug={entry.slug} />

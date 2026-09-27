@@ -26,6 +26,16 @@ export const metadata: Metadata = buildMeta({
 export default function HomePage() {
   return (
     <>
+      {/* The hero is a CSS background, which React cannot auto-preload, so the
+          LCP image is declared explicitly with its responsive candidates.
+          No `fetchPriority` here: a preload is already high priority, and
+          marking it so makes React emit a second, duplicate preload. */}
+      <link
+        rel="preload"
+        as="image"
+        imageSrcSet="/images/hero/hero-homepage.avif 1200w, /images/hero/hero-homepage-lg.avif 2000w"
+        imageSizes="100vw"
+      />
       <Hero />
       <Intro />
       <SelectedWork

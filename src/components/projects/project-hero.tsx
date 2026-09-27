@@ -18,8 +18,6 @@ export function ProjectHero({ project }: { project: Project }) {
         index={project.index}
         title={project.title}
         location={project.location}
-        width={project.hero.width}
-        height={project.hero.height}
       />
 
       <div className="border-t border-ink/10">
