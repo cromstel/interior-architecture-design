@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-cormorant), ui-serif, Georgia, serif;
+
+  --color-ivory: #f6f2ea;
+  --color-cream: #efe9dd;
+  --color-chalk: #faf8f3;
+  --color-sand: #ddd3c2;
+  --color-taupe: #a89a86;
+  --color-stone: #6f6659;
+  --color-charcoal: #2e2b26;
+  --color-ink: #171512;
+  --color-umber: #6b5240;
+
+  --tracking-meta: 0.18em;
+}
+
+@layer base {
+  html {
+    /* scroll-behavior disabled during route transitions (see layout controller) */
+    scroll-behavior: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+
+  body {
+    @apply bg-chalk text-ink antialiased;
+    font-feature-settings: "ss01" on, "cv01" on;
+  }
+
+  ::selection {
+    background: var(--color-ink);
+    color: var(--color-chalk);
+  }
+
+  a {
+    color: inherit;
+  }
+
+  img {
+    user-select: none;
+  }
+
+  :focus-visible {
+    outline: 1px solid var(--color-ink);
+    outline-offset: 4px;
+  }
+
+  /* Static-export safety net: framer-motion bakes its hidden `initial` styles
+     (opacity:0, translateY(115%), …) into the prerendered HTML. If JS never
+     runs, force that content visible so nothing is permanently blank. */
+  html:not(.js) [style*="opacity:0"],
+  html:not(.js) [style*="transform:"] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+@layer utilities {
+  .meta-label {
+    @apply font-sans text-[11px] font-light uppercase tracking-[var(--tracking-meta)] text-stone;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .wordmark {
+    @apply font-display text-sm font-medium tracking-[0.22em] uppercase;
+  }
+}

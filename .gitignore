@@ -1,0 +1,15 @@
+node_modules
+.next
+out
+.env
+.env.local
+*.tsbuildinfo
+next-env.d.ts
+
+# Local planning/notes workspace — intentionally not published
+thoughts/
+
+# Original brief and local agent/tooling instructions — not published
+prompts/
+AGENTS.md
+CLAUDE.md
