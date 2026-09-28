@@ -50,9 +50,13 @@ export function Navigation() {
 
   return (
     <>
+      {/* Rises from an offset rather than fading in from `opacity: 0`: the
+          header sits in the first viewport, and an opacity-0 initial state
+          ships in the server HTML, hiding the wordmark and nav until
+          hydration. */}
       <motion.header
-        initial={reduced ? false : { y: -24, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
+        initial={reduced ? false : { y: -24 }}
+        animate={{ y: 0 }}
         transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         className={cn(
           'fixed inset-x-0 top-0 z-50 transition-colors duration-500',

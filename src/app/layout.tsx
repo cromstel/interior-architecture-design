@@ -127,8 +127,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const vars = `${inter.variable} ${cormorant.variable}`
 
   return (
-    <html lang="en" className={`${vars} js`} suppressHydrationWarning>
+    <html lang="en" className={vars} suppressHydrationWarning>
       <body>
+        {/* Marks the document as script-capable so the `html:not(.js)` safety
+            net in `globals.css` can neutralise framer-motion's server-rendered
+            `opacity: 0` / `translateY(115%)` initial states. Hardcoding the
+            class instead would disable that net for the exact visitors it
+            exists to protect. Runs during parsing, well before first paint. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "document.documentElement.classList.add('js')",
+          }}
+        />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-ink focus:px-4 focus:py-2 focus:text-chalk"

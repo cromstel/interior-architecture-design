@@ -26,8 +26,8 @@ export function NotFoundHero({ src }: { src: string }) {
 
       <motion.div
         className="relative z-10 flex h-full flex-col justify-end px-6 pb-10 pt-28 md:px-10 md:pb-14"
-        initial={reduced ? false : { opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={reduced ? false : { y: 20 }}
+        animate={{ y: 0 }}
         transition={{ duration: 1, ease: EASE, delay: 0.15 }}
       >
         {/* Left-anchored column. */}

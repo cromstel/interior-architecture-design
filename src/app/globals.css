@@ -61,7 +61,9 @@
 
   /* Static-export safety net: framer-motion bakes its hidden `initial` styles
      (opacity:0, translateY(115%), …) into the prerendered HTML. If JS never
-     runs, force that content visible so nothing is permanently blank. */
+     runs, force that content visible so nothing is permanently blank.
+     The `js` class is added by the inline script in `layout.tsx`, so this
+     guard only applies when scripting is genuinely unavailable. */
   html:not(.js) [style*="opacity:0"],
   html:not(.js) [style*="transform:"] {
     opacity: 1 !important;

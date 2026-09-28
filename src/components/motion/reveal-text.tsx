@@ -24,6 +24,10 @@ type RevealTextProps = {
  * Editorial word-by-word masked reveal. Each word is hidden inside an
  * overflow-hidden mask and rises into place with a controlled ease.
  * Renders static markup when the visitor prefers reduced motion.
+ *
+ * The masked offset is server-rendered, so a visitor without JavaScript (or
+ * with a failed bundle) would see no heading at all. `globals.css` neutralises
+ * the offset unless the document has been flagged as script-capable.
  */
 export function RevealText({
   text,
@@ -56,7 +60,7 @@ export function RevealText({
         {words.map((word, i) => (
           <span key={i} className="inline-block overflow-hidden pb-[0.12em] -mb-[0.12em]">
             <motion.span
-              className="inline-block will-change-transform"
+              className="reveal-word inline-block will-change-transform"
               initial={{ y: '115%' }}
               whileInView={{ y: 0 }}
               viewport={{ once, margin: '0px 0px -12% 0px' }}

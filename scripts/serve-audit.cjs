@@ -13,6 +13,13 @@ const zlib = require('zlib');
 
 const ROOT = path.join(process.cwd(), 'out');
 const COMPRESSIBLE = new Set(['.html', '.js', '.css', '.svg', '.xml', '.txt', '.json']);
+
+// A CDN compresses an asset once and serves the compressed bytes from its edge
+// cache. Re-compressing on every request — at brotli quality 11, which is
+// deliberately slow — charged the site hundreds of ms of server latency that a
+// real deployment never pays. Compress once per (file, encoding) and memoise.
+const BR_QUALITY = 5; // what Cloudflare/Netlify default to; quality 11 is ~10x slower for ~1% more
+const compressed = new Map();
 const MIME = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -55,9 +62,18 @@ http
     const accepts = String(req.headers['accept-encoding'] || '');
     if (COMPRESSIBLE.has(ext) && /\b(br|gzip)\b/.test(accepts) && body.length > 512) {
       const useBr = /\bbr\b/.test(accepts);
+      const key = file + (useBr ? '|br' : '|gzip');
+      let out = compressed.get(key);
+      if (!out) {
+        out = useBr
+          ? zlib.brotliCompressSync(body, {
+              params: { [zlib.constants.BROTLI_PARAM_QUALITY]: BR_QUALITY },
+            })
+          : zlib.gzipSync(body);
+        compressed.set(key, out);
+      }
       headers['Content-Encoding'] = useBr ? 'br' : 'gzip';
       headers.Vary = 'Accept-Encoding';
-      const out = useBr ? zlib.brotliCompressSync(body) : zlib.gzipSync(body);
       headers['Content-Length'] = out.length;
       res.writeHead(200, headers);
       return res.end(out);

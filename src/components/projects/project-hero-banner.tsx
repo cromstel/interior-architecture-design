@@ -41,10 +41,12 @@ export function ProjectHeroBanner({
 
       <HeroScrim direction="to top left" />
 
+      {/* Rises from an offset instead of `opacity: 0` so the banner text is in
+          the first paint rather than waiting on hydration. */}
       <motion.div
         className="relative z-10 flex h-full flex-col justify-end px-6 pb-8 pt-28 md:px-10 md:pb-12"
-        initial={reduced ? false : { opacity: 0, y: 22 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={reduced ? false : { y: 22 }}
+        animate={{ y: 0 }}
         transition={{ duration: 1, ease: EASE, delay: 0.15 }}
       >
         {/* The plate is anchored to the left edge, so the scrim falls off

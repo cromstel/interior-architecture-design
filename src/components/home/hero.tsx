@@ -22,16 +22,22 @@ export function Hero() {
 
       <HeroScrim />
 
+      {/* Every element in the first viewport rises from a small offset rather
+          than fading up from `opacity: 0`. An opacity-0 initial state ships in
+          the server HTML, which means the whole hero is invisible until React
+          hydrates — it pushed FCP to ~2.0s unthrottled and delayed LCP by the
+          length of the animation. Offsets still animate, but the text is in
+          the first paint. */}
       <motion.div
-        initial={reduced ? false : { opacity: 0 }}
-        animate={{ opacity: 1 }}
+        initial={reduced ? false : { y: 16 }}
+        animate={{ y: 0 }}
         transition={{ duration: 1.1, ease: EASE }}
         className="relative z-10 flex h-full flex-col justify-between px-6 pb-16 pt-28 md:px-10 md:pt-32"
       >
         <div>
           <motion.p
-            initial={reduced ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={reduced ? false : { y: 12 }}
+            animate={{ y: 0 }}
             transition={{ duration: 0.9, delay: 0.45, ease: EASE }}
             className="font-sans text-[11px] font-light uppercase tracking-[0.3em] text-chalk/85"
           >
@@ -63,9 +69,9 @@ export function Hero() {
                 people live.
               </motion.p>
               <motion.div
-                initial={reduced ? false : { opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.9, delay: 0.85 }}
+                initial={reduced ? false : { y: 10 }}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.9, delay: 0.85, ease: EASE }}
                 className="mt-10"
               >
                 <Link
