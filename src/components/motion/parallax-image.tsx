@@ -13,9 +13,6 @@ type ParallaxImageProps = {
   amount?: number
   priority?: boolean
   sizes?: string
-  /** Intrinsic pixel box of the source, for full-bleed heroes. */
-  width?: number
-  height?: number
 }
 
 /**
@@ -30,8 +27,6 @@ export function ParallaxImage({
   amount = 0.08,
   priority = false,
   sizes = '100vw',
-  width,
-  height,
 }: ParallaxImageProps) {
   const ref = useRef<HTMLDivElement>(null)
   const reduced = useReducedMotion()
@@ -60,8 +55,6 @@ export function ParallaxImage({
           fetchPriority={priority ? 'high' : 'auto'}
           decoding="async"
           sizes={sizes}
-          width={width}
-          height={height}
           className="block h-full w-full object-cover"
         />
       </motion.div>

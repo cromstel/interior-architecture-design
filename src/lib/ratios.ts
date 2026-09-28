@@ -1,6 +1,7 @@
 import type { ImageRatio } from '@/data/projects'
 
-export const ratioClasses: Record<ImageRatio, string> = {
+/** Not exported: only `ratioClass` below consumes this lookup. */
+const ratioClasses: Record<ImageRatio, string> = {
   landscape: 'aspect-[16/11]',
   portrait: 'aspect-[3/4]',
   square: 'aspect-square',

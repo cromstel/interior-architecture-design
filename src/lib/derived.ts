@@ -37,13 +37,6 @@ export function readingTime(blocks: JournalBlock[]): { minutes: number; words: n
   return { minutes: Math.max(1, Math.round(words / WORDS_PER_MINUTE)), words }
 }
 
-/** Every heading in an entry, for an in-page contents list. */
-export function entryHeadings(blocks: JournalBlock[]): { text: string; id: string }[] {
-  return blocks
-    .filter((b): b is Extract<JournalBlock, { kind: 'heading' }> => b.kind === 'heading')
-    .map((b) => ({ text: b.text, id: slugify(b.text) }))
-}
-
 /** Lowercase, hyphenated, ASCII-safe — stable enough for fragment ids. */
 export function slugify(value: string): string {
   return value

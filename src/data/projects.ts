@@ -4,14 +4,6 @@ export type ImageChunk = {
   src: string
   alt: string
   ratio: ImageRatio
-  /**
-   * Intrinsic pixel box of the asset. Set on hero images so the full-bleed
-   * project banner can declare an explicit box and keep CLS at zero. When a
-   * `-lg` sibling exists the box describes that (larger) file, which is what
-   * `lg()` resolves to; where it does not, it describes the base asset.
-   */
-  width?: number
-  height?: number
 }
 
 export type ProjectNote = {
@@ -39,20 +31,11 @@ export type Project = {
   seo: { title: string; description: string }
 }
 
-const img = (slug: string, name: string, alt: string, ratio: ImageRatio): ImageChunk => ({
-  src: `/images/projects/${slug}/${name}.avif`,
-  alt,
-  ratio,
-})
-
-/** Hero image plus its intrinsic pixel box, for the full-bleed project banner. */
-const hero = (
-  slug: string,
-  name: string,
-  alt: string,
-  ratio: ImageRatio,
-  box: { width: number; height: number },
-): ImageChunk => ({ ...img(slug, name, alt, ratio), ...box })
+  const img = (slug: string, name: string, alt: string, ratio: ImageRatio): ImageChunk => ({
+    src: `/images/projects/${slug}/${name}.avif`,
+    alt,
+    ratio,
+  })
 
 export function projects(): Project[] {
   const raw = [
@@ -68,7 +51,7 @@ export function projects(): Project[] {
         'A full-floor SoHo loft returned to its original discipline — light, volume, and material — reconfigured around the life of a family that wanted the city inside their home.',
       summary:
         'A 4,200 sq ft full-floor loft in a late-nineteenth-century SoHo building, reworked around a single idea: that a home can feel vast and still feel intimate.',
-      hero: hero('mercer-street-loft', 'mercer-loft-hero', 'The main living volume of the Mercer Street Loft in SoHo, with light falling across oak and raw plaster.', 'landscape', { width: 2400, height: 1600 }),
+      hero: img('mercer-street-loft', 'mercer-loft-hero', 'The main living volume of the Mercer Street Loft in SoHo, with light falling across oak and raw plaster.', 'landscape'),
       chapters: [
         img('mercer-street-loft', 'mercer-loft-living', 'A restrained seating arrangement in the Mercer Street Loft, pale plaster and soft daylight.', 'square'),
         img('mercer-street-loft', 'mercer-loft-kitchen', 'The Mercer Street Loft kitchen, light oak cabinetry framed against black steel windows.', 'landscape'),
@@ -106,7 +89,7 @@ export function projects(): Project[] {
         'A nineteenth-century Greenwich Village townhouse reimagined as a quiet contemporary home while preserving the proportions, craftsmanship, and character of the original structure.',
       summary:
         'A full architectural and interior transformation of a nineteenth-century Greenwich Village townhouse — six floors of historic rooms made new, without losing the house they always were.',
-      hero: hero('west-11th-townhouse', 'west-11th-facade', 'The brownstone facade of the West 11th Townhouse in Greenwich Village, stoop and ironwork restored.', 'landscape', { width: 2400, height: 1589 }),
+      hero: img('west-11th-townhouse', 'west-11th-facade', 'The brownstone facade of the West 11th Townhouse in Greenwich Village, stoop and ironwork restored.', 'landscape'),
       chapters: [
         img('west-11th-townhouse', 'west-11th-staircase', 'The restored stair hall of the West 11th Townhouse, original oak rail and new architectural lighting.', 'portrait'),
         img('west-11th-townhouse', 'west-11th-kitchen', 'The West 11th Townhouse kitchen, painted cabinetry, marble, and warm plaster walls.', 'portrait'),
@@ -165,7 +148,7 @@ export function projects(): Project[] {
       summary:
         'A 5,100 sq ft pre-war apartment on the Upper East Side, its grand rooms re-proportioned and re-finished for a slower, quieter kind of urban life.',
       // No `-lg` sibling on disk, so the base 1200x1200 asset is the largest copy.
-      hero: hero('park-avenue-residence', 'park-avenue-living-room', 'The principal living room of the Park Avenue Residence, neutral walls and soft daylight.', 'square', { width: 1200, height: 1200 }),
+      hero: img('park-avenue-residence', 'park-avenue-living-room', 'The principal living room of the Park Avenue Residence, neutral walls and soft daylight.', 'square'),
       chapters: [
         img('park-avenue-residence', 'park-avenue-kitchen', 'The Park Avenue Residence kitchen, dark cabinetry and a single slab of marble.', 'landscape'),
         img('park-avenue-residence', 'park-avenue-hallway', 'A long gallery hallway in the Park Avenue Residence, works on the wall, light at the far end.', 'landscape'),
@@ -203,7 +186,7 @@ export function projects(): Project[] {
         'A new house on a quiet Amagansett lane, drawn low across its field of beach grass — rooms organized around the light, the views, and the weather moving in off the Atlantic.',
       summary:
         'New residential architecture in the Hamptons — a 7,400 sq ft house composed as a single long gesture across its site, internal courtyards and deep overhangs doing the work of the old farmhouses.',
-      hero: hero('amagansett-house', 'amagansett-hero', 'The Amagansett House entrance hall, light flooding in from the garden beyond.', 'landscape', { width: 2400, height: 1651 }),
+      hero: img('amagansett-house', 'amagansett-hero', 'The Amagansett House entrance hall, light flooding in from the garden beyond.', 'landscape'),
       chapters: [
         img('amagansett-house', 'amagansett-living', 'The main living space of the Amagansett House, light and pale materials, the landscape at every window.', 'landscape'),
         img('amagansett-house', 'amagansett-kitchen', 'The Amagansett House kitchen, light oak and black-framed glazing opening to the lawn.', 'landscape'),
@@ -241,7 +224,7 @@ export function projects(): Project[] {
         'A converted industrial building on the Brooklyn waterfront, reorganized for one family — the rawness of the loft kept, softened where a home needs softness, and nothing more.',
       summary:
         'A 3,600 sq ft loft in a converted Williamsburg factory, where the industrial shell is respected and the domestic life inside is made warm, exact, and personal.',
-      hero: hero('wythe-residence', 'wythe-hero', 'The Wythe Residence kitchen, dark cabinetry and a broad stone island against the raw loft shell.', 'landscape', { width: 2400, height: 1223 }),
+      hero: img('wythe-residence', 'wythe-hero', 'The Wythe Residence kitchen, dark cabinetry and a broad stone island against the raw loft shell.', 'landscape'),
       chapters: [
         img('wythe-residence', 'wythe-living', 'The Wythe Residence living area, neutral seating within the loft volume.', 'square'),
         img('wythe-residence', 'wythe-kitchen', 'The light kitchen corner of the Wythe Residence, wood and steel.', 'landscape'),
@@ -280,7 +263,7 @@ export function projects(): Project[] {
       summary:
         'Architectural and interior renovation of a Hudson Valley farmhouse — 5,900 sq ft throughout and beside the original structure, uniting old timber and new, quiet architecture.',
       // `-lg` was shrunk to 2000px by scripts/shrink-oversized-avif.mjs.
-      hero: hero('hudson-house', 'hudson-house-living', 'The main room of the Hudson House, paneled walls and warm light.', 'landscape', { width: 2000, height: 3000 }),
+      hero: img('hudson-house', 'hudson-house-living', 'The main room of the Hudson House, paneled walls and warm light.', 'landscape'),
       chapters: [
         img('hudson-house', 'hudson-house-fireplace', 'The fireplace wall of the Hudson House, the old hearth kept at the center of the room.', 'landscape'),
         img('hudson-house', 'hudson-house-kitchen', 'The Hudson House kitchen, painted oak and marble, tall windows to the orchard.', 'portrait'),

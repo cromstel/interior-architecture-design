@@ -2,7 +2,7 @@ import { site } from '@/data/config'
 import { siteConfig, resolveUrl } from '@/lib/site-config'
 import type { Project } from '@/data/projects'
 import type { JournalEntry } from '@/data/journal'
-import { readingTime, wordCount } from '@/lib/derived'
+import { readingTime } from '@/lib/derived'
 
 /**
  * Per-page JSON-LD builders.
@@ -141,5 +141,3 @@ export function siteGraph() {
     },
   ]
 }
-
-export { wordCount }
