@@ -5,6 +5,7 @@ import { Intro } from '@/components/home/intro'
 import { SelectedWork } from '@/components/home/selected-work'
 import { projects } from '@/data/projects'
 import { lg } from '@/lib/image-variants'
+import { srcSetFor } from '@/lib/responsive-image'
 import { Philosophy } from '@/components/home/philosophy'
 import { Services } from '@/components/home/services'
 import { Studio } from '@/components/home/studio'
@@ -33,7 +34,7 @@ export default function HomePage() {
       <link
         rel="preload"
         as="image"
-        imageSrcSet="/images/hero/hero-homepage.avif 1200w, /images/hero/hero-homepage-lg.avif 2000w"
+        imageSrcSet={srcSetFor('/images/hero/hero-homepage-lg.avif')}
         imageSizes="100vw"
       />
       <Hero />

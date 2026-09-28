@@ -6,6 +6,7 @@ import { ArticleNav } from '@/components/journal/article-nav'
 import { buildMeta } from '@/lib/seo'
 import { notFound } from 'next/navigation'
 import { lg } from '@/lib/image-variants'
+import { srcSetFor } from '@/lib/responsive-image'
 import { relatedEntries } from '@/lib/derived'
 import { articleJsonLd } from '@/lib/schema'
 import { RelatedEntries } from '@/components/related-content'
@@ -46,7 +47,6 @@ export default async function JournalPage({
   const entry = getJournalEntry(slug)
   if (!entry) notFound()
 
-  const heroBase = entry.hero.src.replace(/-lg\.(avif|webp|jpe?g|png)$/i, '.$1')
   const heroLg = lg(entry.hero.src)
 
   return (
@@ -56,7 +56,7 @@ export default async function JournalPage({
       <link
         rel="preload"
         as="image"
-        imageSrcSet={`${heroBase} 1200w, ${heroLg} 2000w`}
+        imageSrcSet={srcSetFor(heroLg)}
         imageSizes="100vw"
       />
       <ArticleHero entry={entry} />

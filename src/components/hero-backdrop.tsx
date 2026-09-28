@@ -2,6 +2,7 @@
 
 import { useRef } from 'react'
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import { baseSrc, smallSrc } from '@/lib/responsive-image'
 
 type HeroBackdropProps = {
   /** Resolved hero path, normally the `-lg` (2000px) AVIF variant. */
@@ -46,8 +47,12 @@ export function HeroBackdrop({
   })
   const y = useTransform(scrollYProgress, [0, 1], [`-${amount * 100}%`, `${amount * 100}%`])
 
-  const base = src.replace(/-lg\.(avif|webp|jpe?g|png)$/i, '.$1')
-  const imageSet = `image-set(url("${base}") type("image/avif") 1x, url("${src}") type("image/avif") 2x)`
+  const base = baseSrc(src)
+  const small = smallSrc(src)
+  // `image-set()` takes resolution descriptors rather than widths, so the
+  // tiers map onto 1x/2x. The plain url() layer underneath is the fallback
+  // for browsers without image-set().
+  const imageSet = `image-set(url("${small}") type("image/avif") 1x, url("${base}") type("image/avif") 1.5x, url("${src}") type("image/avif") 2x)`
 
   return (
     <div ref={ref} className={`absolute inset-0 overflow-hidden ${className}`}>

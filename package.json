@@ -11,6 +11,7 @@
     "serve:audit": "node scripts/serve-audit.cjs",
     "images:fetch": "node scripts/fetch-images.mjs",
     "images:shrink": "node scripts/shrink-oversized-avif.mjs",
+    "images:sm": "node scripts/add-small-tier.mjs",
     "images:og": "node scripts/make-og-image.mjs",
     "images:hero404": "node scripts/make-404-hero.mjs",
     "hero404": "node scripts/make-404-hero.mjs"

@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { cn } from '@/lib/cn'
 import { ratioClass } from '@/lib/ratios'
+import { srcSetFor } from '@/lib/responsive-image'
 
 const EASE = [0.16, 1, 0.3, 1] as const
 
@@ -32,10 +33,9 @@ export function MaskedImage({
   eager = false,
 }: MaskedImageProps) {
   const reduced = useReducedMotion()
-  // Coarse responsive source: pair the base (1200px) file with the `-lg`
-  // (2400px) variant when one is in use, so phones never download the giant copy.
-  const baseSrc = src.replace(/-lg\.(jpe?g|png|webp|avif)$/, '.$1')
-  const srcSet = src !== baseSrc ? `${baseSrc} 1200w, ${src} 2000w` : undefined
+  // Three candidates (800w / 1200w / 2000w) so a handset never pulls a
+  // desktop-sized photograph for a small editorial crop.
+  const srcSet = srcSetFor(src)
 
   return (
     <div className={cn('relative overflow-hidden', ratio ? ratioClass(ratio) : '', className)}>

@@ -23,6 +23,7 @@ npm run typecheck        # tsc --noEmit
 npm run serve            # serve the out/ export (npx serve)
 npm run serve:audit      # serve out/ with compression + cache headers, for auditing
 npm run images:shrink    # cap any AVIF above 400 KB to 2000px / q58
+npm run images:sm        # regenerate the 800w tier (idempotent)
 npm run images:og        # regenerate the 1200x630 JPEG share cards
 npm run images:hero404   # regenerate the 404 hero plate
 npm run images:fetch     # DESTRUCTIVE: re-download every photo from Unsplash
@@ -30,9 +31,19 @@ npm run images:fetch     # DESTRUCTIVE: re-download every photo from Unsplash
 
 ## Images
 
-All imagery is self-hosted in `public/images/` and ships as **AVIF** at two widths
-(base `w=1200`, `-lg` `w=2000`), referenced through a `1200w`/`2000w` `srcset` plus a
-per-composition `sizes` so phones never download the large copy.
+All imagery is self-hosted in `public/images/` and ships as **AVIF** in three
+widths, referenced through a `srcset` plus a per-composition `sizes` so a
+handset never downloads a desktop-sized photograph:
+
+| File | Width | Used by |
+| --- | --- | --- |
+| `-sm.avif` | 800 | high-DPR phones, small editorial crops |
+| `.avif` | 1200 | default |
+| `-lg.avif` | 2000 | large displays, only where the variant exists |
+
+Candidates are derived from the path by `src/lib/responsive-image.ts` — pure
+string manipulation with no filesystem access, so it is safe in client bundles.
+The naming convention is fixed, which is why no disk probing is needed.
 
 **The AVIF files are the source of truth.** The JPEG originals are optional working
 files: `images:fetch` downloads them, encodes them, and they are then deleted to keep
@@ -46,6 +57,7 @@ are the only non-AVIF image files in the project.
 
 ```bash
 npm run images:shrink    # cap any AVIF above 400 KB to 2000px / q58 (safe)
+npm run images:sm        # regenerate the 800w tier (safe; --force to rebuild)
 npm run images:og        # regenerate share cards (safe; fails loudly if the data shape changed)
 npm run images:hero404   # regenerate the 404 hero plate (safe)
 npm run images:fetch     # re-download all photos and re-encode — overwrites public/images/

@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
 import { cn } from '@/lib/cn'
+import { srcSetFor } from '@/lib/responsive-image'
 import type { Project } from '@/data/projects'
 import { RevealText } from '@/components/motion/reveal-text'
 import { FadeIn } from '@/components/motion/fade-in'
@@ -22,11 +23,9 @@ function ProjectImage({
   className?: string
 }) {
   const reduced = useReducedMotion()
-  // Pair the base (1200px) file with the `-lg` (2400px) variant that `lg()` may
-  // have resolved, so phones never download the 2400px copy. `sizes` is passed
-  // per composition because most of these are partial-width, not full-bleed.
-  const baseSrc = src.replace(/-lg\.(jpe?g|png|webp|avif)$/, '.$1')
-  const srcSet = src !== baseSrc ? `${baseSrc} 1200w, ${src} 2000w` : undefined
+  // Three candidates (800w / 1200w / 2000w) so a handset never pulls a
+  // desktop-sized photograph for a partial-width composition.
+  const srcSet = srcSetFor(src)
   return (
     <motion.img
       src={src}

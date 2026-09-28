@@ -7,6 +7,7 @@ import { RelatedProjects } from '@/components/related-content'
 import { buildMeta } from '@/lib/seo'
 import { notFound } from 'next/navigation'
 import { lg } from '@/lib/image-variants'
+import { srcSetFor } from '@/lib/responsive-image'
 import { relatedProjects } from '@/lib/derived'
 import { projectJsonLd } from '@/lib/schema'
 
@@ -44,7 +45,6 @@ export default async function ProjectPage({
   const project = getProject(slug)
   if (!project) notFound()
 
-  const heroBase = project.hero.src.replace(/-lg\.(avif|webp|jpe?g|png)$/i, '.$1')
   const heroLg = lg(project.hero.src)
 
   return (
@@ -54,7 +54,7 @@ export default async function ProjectPage({
       <link
         rel="preload"
         as="image"
-        imageSrcSet={`${heroBase} 1200w, ${heroLg} 2000w`}
+        imageSrcSet={srcSetFor(heroLg)}
         imageSizes="100vw"
       />
       <ProjectHero project={project} />

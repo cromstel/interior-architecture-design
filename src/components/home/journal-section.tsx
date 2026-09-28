@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
 import { cn } from '@/lib/cn'
+import { srcSetFor } from '@/lib/responsive-image'
 import type { JournalEntry } from '@/data/journal'
 import { RevealText } from '@/components/motion/reveal-text'
 
@@ -20,10 +21,9 @@ function JournalImage({
   className?: string
 }) {
   const reduced = useReducedMotion()
-  // Responsive pairing so phones never pull the 2400px copy. The card is
-  // partial-width in the 12-col grid, hence the narrower `sizes`.
-  const baseSrc = src.replace(/-lg\.(jpe?g|png|webp|avif)$/, '.$1')
-  const srcSet = src !== baseSrc ? `${baseSrc} 1200w, ${src} 2000w` : undefined
+  // Three candidates (800w / 1200w / 2000w). The card is partial-width in the
+  // 12-col grid, so the narrower `sizes` matters as much as the tiers.
+  const srcSet = srcSetFor(src)
   return (
     <motion.img
       src={src}
