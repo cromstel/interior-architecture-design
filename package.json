@@ -8,6 +8,7 @@
     "build": "next build",
     "typecheck": "tsc --noEmit",
     "serve": "npx serve out",
+    "serve:audit": "node scripts/serve-audit.cjs",
     "images:fetch": "node scripts/fetch-images.mjs",
     "images:shrink": "node scripts/shrink-oversized-avif.mjs",
     "images:og": "node scripts/make-og-image.mjs",

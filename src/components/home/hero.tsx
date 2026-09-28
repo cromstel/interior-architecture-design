@@ -47,10 +47,16 @@ export function Hero() {
               stagger={0.06}
             />
             <div className="mt-8 max-w-md md:mt-10">
+              {/* This paragraph is the Largest Contentful Paint element on
+                  mobile, and LCP is only registered once an element has
+                  actually been painted. Animating it in from `opacity: 0`
+                  therefore pushes LCP out by the length of the animation, so
+                  the copy rises into place from full opacity instead — the
+                  movement is kept, the paint delay is not. */}
               <motion.p
-                initial={reduced ? false : { opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, delay: 0.65, ease: EASE }}
+                initial={reduced ? false : { y: 14 }}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: EASE }}
                 className="font-sans text-base font-light leading-relaxed text-chalk/80"
               >
                 Interior architecture and design shaped by material, light, proportion, and the way

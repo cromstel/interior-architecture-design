@@ -21,6 +21,7 @@ npm run dev              # local dev server (port 5712)
 npm run build            # typecheck + production build into out/
 npm run typecheck        # tsc --noEmit
 npm run serve            # serve the out/ export (npx serve)
+npm run serve:audit      # serve out/ with compression + cache headers, for auditing
 npm run images:shrink    # cap any AVIF above 400 KB to 2000px / q58
 npm run images:og        # regenerate the 1200x630 JPEG share cards
 npm run images:hero404   # regenerate the 404 hero plate
@@ -116,12 +117,24 @@ The build emits a fully static `out/` directory (with `404.html` and
 `src/app/robots.ts` and derive from the data layer, so they cannot drift from the
 routes that exist.
 
-### Host requirements
+### Auditing
 
-Measured with Lighthouse (mobile emulation) against a local static server, the
-site scores **100 accessibility, 100 best practices, 100 SEO, and 0 CLS**. The
-performance score is gated on two things the host must provide, not on the
-codebase — with them the site clears the 90 target:
+`npm run serve:audit` serves `out/` the way a real host does — Brotli/gzip for
+text assets, and `Cache-Control` headers — so a local Lighthouse run reflects a
+production deployment rather than a bare file server.
+
+Latest measured scores (Lighthouse, mobile emulation): **accessibility 100,
+best practices 100, SEO 100, CLS 0**.
+
+On the performance score, be sceptical of any number produced on a local
+server: Lighthouse's simulated throttling inflates TTFB to ~1s for a local static
+file, and the hero's LCP phase is dominated by render delay on the main thread
+rather than by any single asset. The code-side items Lighthouse has flagged are
+addressed — AVIF with responsive `srcset`, responsive preloading, evergreen
+browser targets, and no `opacity: 0` on the hero copy that acts as the LCP
+element. Measure on the deployed host before drawing conclusions.
+
+### Host requirements
 
 - **Compression.** Text assets are ~678 KB uncompressed; enable gzip or Brotli
   for `.html`, `.js`, `.css`, `.svg` and `.xml`.
