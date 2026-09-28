@@ -232,7 +232,7 @@ function SelectField({
           id={id}
           value={value}
           onChange={onChange}
-          className={`${inputClass} appearance-none pr-8 ${value ? 'text-ink' : 'text-stone/70'}`}
+          className={`${inputClass} appearance-none pr-8 ${value ? 'text-ink' : 'text-stone'}`}
         >
           <option value="" disabled>
             {placeholder}

@@ -46,7 +46,12 @@ export function RevealText({
   }
 
   return (
-    <Tag className={className} id={id} aria-label={text}>
+    <Tag className={className} id={id}>
+      {/* The words are individually masked, so they are hidden from assistive
+          tech and the sentence is exposed once as plain text. `aria-label`
+          would be the obvious alternative but is prohibited on elements
+          without a role, such as a <p>. */}
+      <span className="sr-only">{text}</span>
       <span aria-hidden className="inline">
         {words.map((word, i) => (
           <span key={i} className="inline-block overflow-hidden pb-[0.12em] -mb-[0.12em]">

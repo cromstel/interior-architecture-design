@@ -22,7 +22,7 @@ export function Studio() {
           text="The Studio"
           className="font-display text-[clamp(2.6rem,6vw,5.5rem)] font-light leading-none tracking-[-0.01em] text-ink"
         />
-        <p className="meta-label mt-6">Founders</p>
+        <p className="meta-label-sand mt-6">Founders</p>
 
         <div className="mt-16 grid gap-16 md:mt-28 md:grid-cols-2 md:gap-24">
           {site.founders.map((founder, i) => (
@@ -43,8 +43,8 @@ export function Studio() {
                 <h3 className="font-display text-[clamp(1.8rem,3.4vw,2.9rem)] font-light leading-none text-ink">
                   {founder.name}
                 </h3>
-                <p className="meta-label mt-3">{founder.role}</p>
-                <p className="mt-6 max-w-sm font-sans text-sm font-light leading-relaxed text-stone">
+                <p className="meta-label-sand mt-3">{founder.role}</p>
+                <p className="mt-6 max-w-sm font-sans text-sm font-light leading-relaxed text-charcoal">
                   {founder.bio}
                 </p>
               </div>

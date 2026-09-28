@@ -22,7 +22,7 @@ export function Footer() {
 
         <div className="mx-auto mt-16 grid max-w-4xl gap-y-14 md:mt-20 md:grid-cols-3 md:gap-x-10">
           <div>
-            <p className="meta-label mb-6">Studio</p>
+            <p className="meta-label-dark mb-6">Studio</p>
             <address className="space-y-1.5 font-sans text-sm font-light not-italic leading-relaxed text-chalk/75">
               <p>{site.address.street}</p>
               <p>{site.address.lines[1]}</p>
@@ -40,7 +40,7 @@ export function Footer() {
           </div>
 
           <div>
-            <p className="meta-label mb-6">Index</p>
+            <p className="meta-label-dark mb-6">Index</p>
             <ul className="space-y-2.5 font-sans text-sm font-light text-chalk/75">
               {navLinks.map((link) => (
                 <li key={link.label}>
@@ -53,7 +53,7 @@ export function Footer() {
           </div>
 
           <div>
-            <p className="meta-label mb-6">Social</p>
+            <p className="meta-label-dark mb-6">Social</p>
             <ul className="space-y-2.5 font-sans text-sm font-light text-chalk/75">
               {[site.social.instagram, site.social.pinterest, site.social.linkedin].map((s) => (
                 <li key={s.label}>
@@ -75,11 +75,7 @@ export function Footer() {
           {site.areas.join(' · ')}
         </p>
 
-        <div className="overflow-hidden py-10 md:py-16" aria-hidden>
-          <p className="whitespace-nowrap text-center font-display font-medium uppercase leading-[0.85] tracking-[0.02em] text-chalk/[0.07] text-[clamp(3rem,13vw,12.5rem)] select-none">
-            citgroup&nbsp;&amp;&nbsp;VALE
-          </p>
-        </div>
+        <div className="ghost-wordmark" aria-hidden />
 
         <div className="flex flex-col items-center gap-2 border-t border-chalk/15 py-6 text-center font-sans text-[10px] uppercase tracking-[var(--tracking-meta)] text-chalk/55">
           <p>

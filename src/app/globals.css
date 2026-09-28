@@ -73,8 +73,31 @@
   .meta-label {
     @apply font-sans text-[11px] font-light uppercase tracking-[var(--tracking-meta)] text-stone;
   }
+  /* Context variants. `stone` on the sand and ink fields falls below the 4.5:1
+     AA threshold, so labels on those backgrounds use these instead. Colours are
+     set here rather than as an extra utility on the call site, because two
+     competing text-colour utilities resolve by stylesheet order, not by the
+     order they appear in the class attribute. */
+  .meta-label-sand {
+    @apply font-sans text-[11px] font-light uppercase tracking-[var(--tracking-meta)] text-charcoal;
+  }
+  .meta-label-dark {
+    @apply font-sans text-[11px] font-light uppercase tracking-[var(--tracking-meta)] text-taupe;
+  }
   .text-balance {
     text-wrap: balance;
+  }
+  /* The footer's oversized wordmark is a texture, not copy: it sits at 7%
+     tint purely as a graphic flourish and is hidden from assistive tech.
+     Drawn through a pseudo-element so it is never exposed as a text node —
+     otherwise contrast tooling reads it as unreadable body copy. The brand
+     string is duplicated here on purpose, as decoration rather than content. */
+  .ghost-wordmark {
+    @apply overflow-hidden py-10 select-none md:py-16;
+  }
+  .ghost-wordmark::before {
+    content: 'citgroup & VALE';
+    @apply block whitespace-nowrap text-center font-display font-medium uppercase leading-[0.85] tracking-[0.02em] text-chalk/[0.07] text-[clamp(3rem,13vw,12.5rem)];
   }
   .wordmark {
     @apply font-display text-sm font-medium tracking-[0.22em] uppercase;
