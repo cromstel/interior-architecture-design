@@ -8,7 +8,7 @@
 import { mkdir, readFile, writeFile, copyFile, rm } from 'node:fs/promises'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { convertToWebP } from './optimize-images.mjs'
+import { convertToAVIF } from './avif.mjs'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const cacheDir = join(root, '.images-cache')
@@ -157,10 +157,12 @@ async function main() {
   await mkdir(ogDir, { recursive: true })
   await copyFile(ogSrc, join(ogDir, 'og-citgroup-and-vale.jpg'))
 
-  // Convert every JPEG to a compressed WebP sibling (og/ is kept JPEG only).
-  const { converted, saved } = await convertToWebP()
-  console.log(`Optimized ${converted} images to WebP (-${(saved / 1024 / 1024).toFixed(2)} MB).`)
-
+  // Encode every downloaded JPEG to AVIF (og/ is deliberately left JPEG).
+  const { converted, saved } = await convertToAVIF()
+  console.log(
+    `Encoded ${converted} images to AVIF (-${(saved / 1024 / 1024).toFixed(2)} MB).`
+  )
+  console.log('Share cards are generated separately: `npm run images:og`.')
   console.log('Done. All images written to public/images/.')
 }
 

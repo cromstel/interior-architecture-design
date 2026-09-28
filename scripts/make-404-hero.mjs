@@ -12,7 +12,7 @@
  * and 2000w `-lg`, matching the `lg()` / srcSet contract used site-wide.
  *
  * Note: `scripts/fetch-images.mjs` deletes and regenerates `public/images/`
- * from scratch, so re-run this script (or `npm run hero404`) after it.
+ * from scratch, so re-run this script (or `npm run images:hero404`) after it.
  *
  * Run: `node scripts/make-404-hero.mjs`
  */
@@ -32,7 +32,7 @@ const SOURCE = join(
 )
 const OUT_DIR = join(root, 'public', 'images', 'hero')
 
-/** Output width -> AVIF quality, mirroring optimize-images.mjs (65) / shrink-oversized-avif.mjs (58). */
+/** Output width -> AVIF quality, mirroring avif.mjs (65) / shrink-oversized-avif.mjs (58). */
 const VARIANTS = [
   { file: 'hero-404.avif', width: 1200, quality: 65, effort: 2 },
   { file: 'hero-404-lg.avif', width: 2000, quality: 58, effort: 3 },

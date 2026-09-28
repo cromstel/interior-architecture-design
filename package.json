@@ -8,9 +8,10 @@
     "build": "next build",
     "typecheck": "tsc --noEmit",
     "serve": "npx serve out",
-    "optimize": "node scripts/optimize-images.mjs",
-    "shrink": "node scripts/shrink-oversized-avif.mjs",
-    "og": "node scripts/make-og-image.mjs",
+    "images:fetch": "node scripts/fetch-images.mjs",
+    "images:shrink": "node scripts/shrink-oversized-avif.mjs",
+    "images:og": "node scripts/make-og-image.mjs",
+    "images:hero404": "node scripts/make-404-hero.mjs",
     "hero404": "node scripts/make-404-hero.mjs"
   },
   "keywords": [],

@@ -27,30 +27,46 @@ const QUALITY = 82
 const read = (p) => readFileSync(join(root, p), 'utf8')
 
 /**
- * Collect `{ slug, src }` for every entry that declares a `hero:`.
+ * Collect `{ slug, path }` for every entry that declares a `hero:`.
+ *
  * Handles both hero shapes used in the data layer:
- *   projects: img('mercer-street-loft', 'mercer-loft-hero', ...)  -> path built from parts
+ *   projects: hero('mercer-street-loft', 'mercer-loft-hero', ...)  -> path from parts
  *   journal:  img('/images/journal/.../x.avif', ...)             -> literal path
+ *
+ * Any helper name is accepted, and each hero is paired with the nearest
+ * preceding `slug:` rather than by index — positional pairing silently breaks
+ * the moment the data files diverge in shape.
  */
 function collectHeroes(file) {
   const src = read(file)
   const out = []
-  // Slugs appear as `slug: '...'`; the first ones are type declarations, so we
-  // pair positionally with the hero calls and drop any without a hero.
-  const slugs = [...src.matchAll(/^\s*slug:\s*'([^']+)',/gm)].map((m) => m[1])
-  const heroes = [...src.matchAll(/hero:\s*img\(([^)]*)\)/g)].map((m) => m[1])
+  let slug = null
 
-  heroes.forEach((args, i) => {
-    const slug = slugs[i]
-    if (!slug) return
-    const literal = args.match(/'(\/images\/[^']+\.avif)'/)
+  // Walk both patterns in source order so a hero inherits the slug declared
+  // above it, whatever helper the module happens to use.
+  const events = [
+    ...[...src.matchAll(/^\s*slug:\s*'([^']+)',/gm)].map((m) => ({ at: m.index, slug: m[1] })),
+    ...[...src.matchAll(/^\s*hero:\s*\w+\(([^)]*)\)/gm)].map((m) => ({ at: m.index, args: m[1] })),
+  ].sort((a, b) => a.at - b.at)
+
+  for (const ev of events) {
+    if (ev.slug !== undefined) {
+      slug = ev.slug
+      continue
+    }
+    if (!slug) continue
+
+    const literal = ev.args.match(/'(\/images\/[^']+\.avif)'/)
     let path = literal && literal[1]
     if (!path) {
-      const parts = args.match(/^\s*'([^']+)'\s*,\s*'([^']+)'/)
+      const parts = ev.args.match(/^\s*'([^']+)'\s*,\s*'([^']+)'/)
       if (parts) path = `/images/projects/${parts[1]}/${parts[2]}.avif`
     }
-    if (path) out.push({ slug, path })
-  })
+    if (path) {
+      out.push({ slug, path })
+      slug = null // one hero per entry
+    }
+  }
   return out
 }
 
@@ -68,10 +84,29 @@ function resolveSource(p) {
     .find((x) => existsSync(x))
 }
 
+const projectHeroes = collectHeroes('src/data/projects.ts')
+const journalHeroes = collectHeroes('src/data/journal.ts')
+
+// A silent partial parse is worse than a hard failure: it would leave stale
+// cards behind and quietly break the og:image on pages that still reference
+// them. If either module stops parsing the way we expect, stop.
+for (const [label, found, expected] of [
+  ['projects.ts', projectHeroes, 6],
+  ['journal.ts', journalHeroes, 3],
+]) {
+  if (found.length !== expected) {
+    console.error(
+      `Expected ${expected} hero(s) in src/data/${label} but parsed ${found.length}. ` +
+        'The data shape has changed — update collectHeroes() in this script.'
+    )
+    process.exit(1)
+  }
+}
+
 const targets = [
   { slug: 'og-citgroup-and-vale', path: '/images/hero/hero-homepage.avif' },
-  ...collectHeroes('src/data/projects.ts'),
-  ...collectHeroes('src/data/journal.ts'),
+  ...projectHeroes,
+  ...journalHeroes,
 ]
 
 mkdirSync(ogDir, { recursive: true })
