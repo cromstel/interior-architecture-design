@@ -31,14 +31,6 @@ export const metadata: Metadata = {
   applicationName: site.name,
   authors: [{ name: 'Citgroup & Vale' }],
   category: 'architecture',
-  keywords: [
-    'interior architecture',
-    'interior design',
-    'New York interior designer',
-    'residential design',
-    'townhouse renovation',
-    'architecture studio',
-  ],
   alternates: { canonical: siteConfig.baseUrl },
   openGraph: {
     type: 'website',

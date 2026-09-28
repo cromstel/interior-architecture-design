@@ -32,14 +32,6 @@ export async function generateMetadata({
     // 1200x630 JPEG card rather than the page's own hero.
     ogImage: `/images/og/${project.slug}.jpg`,
     ogImageAlt: `${project.title} — ${project.category}, ${project.location}, ${project.year}. Interior architecture by citgroup & Vale.`,
-    keywords: [
-      project.title,
-      project.category,
-      project.location,
-      `interior design ${project.location}`,
-      'New York interior designer',
-      'citgroup & Vale',
-    ],
   })
 }
 

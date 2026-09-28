@@ -34,13 +34,6 @@ export async function generateMetadata({
     ogImageAlt: `${entry.title} — ${entry.category}. A journal entry from citgroup & Vale.`,
     ogType: 'article',
     publishedTime: entry.dateISO,
-    keywords: [
-      entry.title,
-      entry.category,
-      'interior design journal',
-      'New York interior designer',
-      'citgroup & Vale',
-    ],
   })
 }
 
