@@ -2,16 +2,12 @@
 
 import { useRef } from 'react'
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
-import { baseSrc, smallSrc } from '@/lib/responsive-image'
+import { baseSrc, srcSetFor } from '@/lib/responsive-image'
 
 type HeroBackdropProps = {
-  /** Resolved hero path, normally the `-lg` (2000px) AVIF variant. */
+  /** Resolved hero path, normally the `-lg` (largest) AVIF variant. */
   src: string
-  /**
-   * Describes the photograph. A CSS background is invisible to assistive
-   * tech, so it is surfaced explicitly via `role="img"` + `aria-label`
-   * rather than being dropped.
-   */
+  /** Describes the photograph. */
   alt: string
   /** Subtle vertical drift as the hero scrolls away. Ignored for reduced motion. */
   amount?: number
@@ -21,17 +17,41 @@ type HeroBackdropProps = {
 }
 
 /**
- * The photographic field behind a hero banner, painted as a CSS background
- * rather than an `<img>`.
+ * How much to oversize the image layer, as a percentage of the hero, so a
+ * vertical drift of `amount` can never expose an edge.
  *
- * Two candidates are offered through `image-set()`: the 1200px base at 1x and
- * the 2000px `-lg` variant at 2x, with the base also declared as a plain
- * `url()` layer beneath it. Browsers without `image-set()` drop the first
- * layer and fall back to the base file rather than showing nothing.
+ * The drift is a percentage of the *image layer's own height*, not the hero's,
+ * so the buffer has to be solved for rather than chosen. With `b` as the buffer,
+ * the layer is `(100 + 2b)%` tall and drifts by `amount * (100 + 2b)%`; needing
+ * the buffer to cover that gives `b >= 100 * amount / (1 - 2 * amount)`.
  *
- * The layer is deliberately larger than its frame (`inset-[-8%_0]`) so the
- * parallax drift never exposes an edge.
+ * A fixed 8% buffer satisfied this for the 0.07 and 0.08 banners but not the
+ * homepage hero at 0.16, which left 74px of flat background along the bottom
+ * edge on first paint.
  */
+function oversizeFor(amount: number): number {
+  return 100 * amount / Math.max(0.01, 1 - 2 * amount)
+}
+
+/**
+ * The photographic field behind a hero banner.
+ *
+ * This is an `<img>`, not a CSS background, and the distinction is load-bearing.
+ * A background was tried first and it was a dead end for two reasons:
+ *
+ *  1. `background-image: image-set(...), url(base)` declares two layers. CSS
+ *     composites every layer, so the browser fetches the `image-set` candidate
+ *     *and* the `url()` one — the "fallback for browsers without image-set()"
+ *     cost a second full-size download on every browser that had the feature.
+ *  2. `image-set()` only accepts resolution descriptors, so a full-bleed hero
+ *     is sized on device pixel ratio alone and ignores its own width. A phone
+ *     at DPR 2.6 pulled the 330 KB large variant to paint a 412px frame.
+ *
+ * An `<img srcset sizes="100vw">` selects on width, fetches exactly one file,
+ * and is the element LCP is actually attributed to. The candidate list is the
+ * same `srcSetFor` the hero preload uses, so the two cannot diverge.
+ */
+
 export function HeroBackdrop({
   src,
   alt,
@@ -46,25 +66,22 @@ export function HeroBackdrop({
     offset: ['start start', 'end start'],
   })
   const y = useTransform(scrollYProgress, [0, 1], [`-${amount * 100}%`, `${amount * 100}%`])
-
-  const base = baseSrc(src)
-  const small = smallSrc(src)
-  // `image-set()` takes resolution descriptors rather than widths, so the
-  // tiers map onto 1x/2x. The plain url() layer underneath is the fallback
-  // for browsers without image-set().
-  const imageSet = `image-set(url("${small}") type("image/avif") 1x, url("${base}") type("image/avif") 1.5x, url("${src}") type("image/avif") 2x)`
+  const buffer = oversizeFor(amount)
 
   return (
     <div ref={ref} className={`absolute inset-0 overflow-hidden ${className}`}>
-      <motion.div
-        role="img"
-        aria-label={alt}
-        className="absolute inset-[-8%_0]"
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <motion.img
+        src={baseSrc(src)}
+        srcSet={srcSetFor(src)}
+        sizes="100vw"
+        alt={alt}
+        decoding="async"
+        fetchPriority="high"
+        className="absolute left-0 right-0 w-full object-cover"
         style={{
-          backgroundImage: `${imageSet}, url("${base}")`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
+          top: `${-buffer}%`,
+          height: `${100 + buffer * 2}%`,
           ...(reduced ? undefined : { y }),
           ...style,
         }}

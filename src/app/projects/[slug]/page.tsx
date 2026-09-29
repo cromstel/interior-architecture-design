@@ -49,8 +49,8 @@ export default async function ProjectPage({
 
   return (
     <article>
-      {/* Explicit preload: the banner is a CSS background, so React does not
-          emit one automatically. */}
+      {/* Explicit preload: the banner is the LCP image. The candidate list and
+          `sizes` match the `<img>` in `HeroBackdrop` exactly. */}
       <link
         rel="preload"
         as="image"

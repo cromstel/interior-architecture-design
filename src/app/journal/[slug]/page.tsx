@@ -51,8 +51,8 @@ export default async function JournalPage({
 
   return (
     <article>
-      {/* Explicit preload: the masthead is a CSS background, so React does not
-          emit one automatically. */}
+      {/* Explicit preload: the masthead is the LCP image. The candidate list and
+          `sizes` match the `<img>` in `HeroBackdrop` exactly. */}
       <link
         rel="preload"
         as="image"

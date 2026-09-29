@@ -10,8 +10,8 @@ export default function NotFound() {
   return (
     <>
       {/* `lg()` is resolved here, in the server component, so the client hero
-          never pulls in node:fs. The banner is a CSS background, so the LCP
-          image is preloaded explicitly. */}
+          never pulls in node:fs. The banner is the LCP image and is preloaded
+          explicitly, with candidates matching the `<img>` in `HeroBackdrop`. */}
       <link rel="preload" as="image" imageSrcSet={srcSetFor(heroLg)} imageSizes="100vw" />
       <NotFoundHero src={heroLg} />
 

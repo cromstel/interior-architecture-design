@@ -33,6 +33,14 @@ export function smallSrc(src: string): string {
  * `src` is normally the resolved (possibly `-lg`) path. When it is not the
  * base, all three tiers are offered; otherwise the large variant is omitted
  * because it does not exist for that asset.
+ *
+ * The `-lg` tier is declared `2000w` because the helpers are filesystem-free by
+ * design (this module is imported by client components) and cannot measure each
+ * file. The convention is not exact: 9 of the 18 `-lg` assets are 2400px wide
+ * and are therefore under-declared. That is the safe direction — a descriptor
+ * never exceeds the true width, so the browser can never select a candidate
+ * that is too small for the frame. It can only defer the `-lg` tier by one
+ * breakpoint in a narrow band, costing some bytes, never sharpness.
  */
 export function srcSetFor(src: string): string | undefined {
   const base = baseSrc(src)

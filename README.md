@@ -135,20 +135,33 @@ routes that exist.
 text assets, and `Cache-Control` headers — so a local Lighthouse run reflects a
 production deployment rather than a bare file server.
 
-Latest measured scores (Lighthouse, mobile emulation): **accessibility 100,
-best practices 100, SEO 100, CLS 0**.
+Latest measured scores (Lighthouse 12, mobile emulation, local audit server):
+**accessibility 100, best practices 100, SEO 100, CLS 0**, performance 86–88.
 
-On the performance score, be sceptical of any number produced on a local
-server: Lighthouse's simulated throttling inflates TTFB to ~1s for a local static
-file, and the hero's LCP phase is dominated by render delay on the main thread
-rather than by any single asset. The code-side items Lighthouse has flagged are
-addressed — AVIF with responsive `srcset`, responsive preloading, evergreen
-browser targets, and no `opacity: 0` on the hero copy that acts as the LCP
-element. Measure on the deployed host before drawing conclusions.
+Performance was 6.2s LCP until the hero was fixed. The cause was not the host:
+`background-image: image-set(...), url(base)` declares two background layers,
+and CSS composites every layer, so the browser fetched the hero **twice** — the
+330 KB large variant *and* the 80 KB base — while the preload fetched a third
+resolution. `image-set()` also only accepts resolution descriptors, so a
+full-bleed hero was sized on device pixel ratio alone and ignored its own width,
+pulling desktop-sized files onto phones. `HeroBackdrop` now renders an `<img>`
+with `srcset`/`sizes="100vw"`, so the preload and the element are guaranteed to
+resolve to one file. LCP went 6.2s → 3.8s, and the hero is the element LCP is
+attributed to rather than an unattributable background.
+
+The remaining LCP time is render delay: script evaluation and hydration of
+~756 KB of JS (≈250 KB over Brotli). The largest single contributor is
+framer-motion at 42 KB Brotli, of which Lighthouse estimates 57% is unused —
+see the note on motion below before removing it.
+
+A caveat worth keeping: Lighthouse's simulated throttling inflates TTFB to
+~0.5s even for a local static file, and a background `next dev` server or a
+busy antivirus will swing TBT by an order of magnitude. Stop stray servers
+before measuring, and re-run at least three times.
 
 ### Host requirements
 
-- **Compression.** Text assets are ~678 KB uncompressed; enable gzip or Brotli
+- **Compression.** Text assets are ~756 KB uncompressed; enable gzip or Brotli
   for `.html`, `.js`, `.css`, `.svg` and `.xml`.
 - **Cache headers.** `Cache-Control: public, max-age=31536000, immutable` for
   fingerprinted files under `_next/static/`, and a short TTL for the HTML.
