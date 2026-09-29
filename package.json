@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "next dev -p 5712",
-    "build": "next build",
+    "build": "next build && npm run images:verify",
     "typecheck": "tsc --noEmit",
     "serve": "npx serve out",
     "serve:audit": "node scripts/serve-audit.cjs",
@@ -14,6 +14,8 @@
     "images:sm": "node scripts/add-small-tier.mjs",
     "images:og": "node scripts/make-og-image.mjs",
     "images:hero404": "node scripts/make-404-hero.mjs",
+    "images:widths": "node scripts/generate-image-widths.mjs",
+    "images:verify": "node scripts/verify-image-srcset.mjs",
     "hero404": "node scripts/make-404-hero.mjs"
   },
   "keywords": [],
