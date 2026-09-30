@@ -16,3 +16,6 @@ CLAUDE.md
 
 # Local deploy output/scratch — not published
 deploy/
+
+# Unsplash download cache for scripts/fetch-images.mjs — rebuilt on demand
+.images-cache/

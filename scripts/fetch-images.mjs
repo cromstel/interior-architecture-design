@@ -6,6 +6,7 @@
  * every project/journal path that references it. Run: `node scripts/fetch-images.mjs`
  */
 import { mkdir, readFile, writeFile, copyFile, rm } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { convertToAVIF } from './avif.mjs'
@@ -135,35 +136,97 @@ async function ensureCached(photoId, width) {
   console.log(`  downloaded ${photoId}@${width}`)
 }
 
+/**
+ * Destinations for a single ITEMS entry, one per width actually requested.
+ *
+ * The `lg: true` entries get two candidates (1200w + 2400w); the rest get one.
+ * Returned as paths so the caller can both skip work and clean up afterwards.
+ */
+function targetsFor(item) {
+  const out = []
+  for (const [suffix, width] of Object.entries(WIDTHS)) {
+    if (suffix === 'lg' && !item.lg) continue
+    const file = item.out.replace(/\.jpg$/, suffix === 'lg' ? '-lg.jpg' : '.jpg')
+    out.push({ width, file, encoded: file.replace(/\.jpg$/, '.avif') })
+  }
+  return out
+}
+
 async function main() {
+  const force = process.argv.includes('--force')
   await mkdir(cacheDir, { recursive: true })
-  await rm(join(outDir, 'images'), { recursive: true, force: true })
-  console.log(`Fetching ${ITEMS.length} images (\u00d72 widths)`)
+
+  // Additive by design. This used to `rm -rf public/images`, which destroyed
+  // all 137 encoded AVIFs on every run — including `hero-404.avif` and the nine
+  // per-slug OG cards, neither of which is produced by this script. Those come
+  // from `npm run images:hero404` and `npm run images:og`, so a plain fetch
+  // silently deleted assets it could never restore. It now only writes the
+  // paths named in ITEMS and leaves everything else alone.
+  const pending = []
+  const skipped = []
 
   for (const item of ITEMS) {
-    for (const [suffix, width] of Object.entries(WIDTHS)) {
-      if (suffix === 'lg' && !item.lg) continue
-      await ensureCached(S[item.src], width)
-      const file = item.out.replace(/\.jpg$/, suffix === 'lg' ? '-lg.jpg' : '.jpg')
-      const dest = join(outDir, file)
-      await mkdir(dirname(dest), { recursive: true })
-      await copyFile(cachePath(S[item.src], width), dest)
+    const targets = targetsFor(item)
+    // Presence is tested on the encoded AVIF, never the JPEG: the JPEGs are
+    // working sources that are deleted after encoding, so a `.jpg` check always
+    // misses and re-encodes every file on every run. That re-encoding silently
+    // undid `images:shrink`, widening the 2000px `-lg` assets back to 2400px.
+    const already = force ? [] : targets.filter((t) => existsSync(join(outDir, t.encoded)))
+    for (const t of targets) {
+      if (already.includes(t)) {
+        skipped.push(t.file)
+        continue
+      }
+      pending.push(t)
     }
   }
 
-  // OpenGraph share card (wide crop of the homepage hero)
-  const ogSrc = join(outDir, 'images/hero/hero-homepage.jpg')
-  const ogDir = join(outDir, 'images/og')
-  await mkdir(ogDir, { recursive: true })
-  await copyFile(ogSrc, join(ogDir, 'og-citgroup-and-vale.jpg'))
+  if (pending.length === 0) {
+    console.log(`All ${ITEMS.length} items already present. Nothing to fetch.`)
+    console.log('Re-run with --force to re-download and re-encode.')
+    return
+  }
 
-  // Encode every downloaded JPEG to AVIF (og/ is deliberately left JPEG).
+  console.log(
+    `Fetching ${pending.length} file(s) across ${ITEMS.length} items` +
+      (skipped.length ? ` (skipping ${skipped.length} already present)` : '') +
+      (force ? ' — forced' : '')
+  )
+
+  for (const { width, file } of pending) {
+    const item = ITEMS.find((i) => targetsFor(i).some((t) => t.file === file))
+    await ensureCached(S[item.src], width)
+    const dest = join(outDir, file)
+    await mkdir(dirname(dest), { recursive: true })
+    await copyFile(cachePath(S[item.src], width), dest)
+  }
+
+  // OpenGraph share card (wide crop of the homepage hero). Only when the hero
+  // itself was just written — otherwise re-copying would overwrite the card
+  // that `images:og` re-cropped to 1200x630.
+  if (pending.some((t) => t.file === 'images/hero/hero-homepage.jpg')) {
+    const ogSrc = join(outDir, 'images/hero/hero-homepage.jpg')
+    const ogDir = join(outDir, 'images/og')
+    await mkdir(ogDir, { recursive: true })
+    await copyFile(ogSrc, join(ogDir, 'og-citgroup-and-vale.jpg'))
+  }
+
+  // Encode to AVIF (og/ is deliberately left JPEG). The JPEGs are working
+  // sources, not deliverables — the site ships AVIF only, so they are removed
+  // once encoded to keep the tree in the same state as before.
   const { converted, saved } = await convertToAVIF()
   console.log(
     `Encoded ${converted} images to AVIF (-${(saved / 1024 / 1024).toFixed(2)} MB).`
   )
-  console.log('Share cards are generated separately: `npm run images:og`.')
-  console.log('Done. All images written to public/images/.')
+
+  for (const { file } of pending) {
+    await rm(join(outDir, file), { force: true })
+  }
+  console.log(`Removed ${pending.length} working JPEG(s).`)
+
+  console.log('Remaining steps: `npm run images:og`, `npm run images:hero404`,')
+  console.log('`npm run images:sm`, `npm run images:shrink`, `npm run images:widths`.')
+  console.log('Only those five maintain assets this script does not own.')
 }
 
 main().catch((err) => {
