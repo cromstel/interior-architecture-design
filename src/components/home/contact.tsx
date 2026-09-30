@@ -33,7 +33,12 @@ const empty: FormState = {
 const inputClass =
   'w-full border-b border-ink/15 bg-transparent py-3 font-sans text-sm font-light text-ink placeholder:text-stone/60 transition-colors duration-500 focus:border-ink'
 
-export function ContactSection() {
+/**
+ * The enquiry form, shared by the homepage section and the dedicated /contact/
+ * page. Exported separately so the two pages share one implementation rather
+ * than each carrying their own copy of the fields.
+ */
+export function ContactForm() {
   const [form, setForm] = useState<FormState>(empty)
 
   const set = (key: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
@@ -63,6 +68,100 @@ export function ContactSection() {
     window.location.href = href
   }
 
+  return (
+    <form onSubmit={onSubmit} className="space-y-7">
+      <div className="grid gap-7 sm:grid-cols-2">
+        <div>
+          <label htmlFor="firstName" className="meta-label mb-2 block">
+            First name
+          </label>
+          <input id="firstName" {...inputProps('firstName')} required autoComplete="given-name" placeholder="First name" className={inputClass} />
+        </div>
+        <div>
+          <label htmlFor="lastName" className="meta-label mb-2 block">
+            Last name
+          </label>
+          <input id="lastName" {...inputProps('lastName')} required autoComplete="family-name" placeholder="Last name" className={inputClass} />
+        </div>
+      </div>
+
+      <div className="grid gap-7 sm:grid-cols-2">
+        <div>
+          <label htmlFor="email" className="meta-label mb-2 block">
+            Email
+          </label>
+          <input id="email" {...inputProps('email')} type="email" required autoComplete="email" placeholder="you@example.com" className={inputClass} />
+        </div>
+        <div>
+          <label htmlFor="phone" className="meta-label mb-2 block">
+            Phone number
+          </label>
+          <input id="phone" {...inputProps('phone')} type="tel" autoComplete="tel" placeholder="+1" className={inputClass} />
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="location" className="meta-label mb-2 block">
+          Project location
+        </label>
+        <input id="location" {...inputProps('location')} placeholder="Neighborhood, city, or region" className={inputClass} />
+      </div>
+
+      <div className="grid gap-7 sm:grid-cols-2">
+        <SelectField
+          id="type"
+          label="Project type"
+          value={form.type}
+          onChange={set('type')}
+          options={projectTypes}
+          placeholder="Select a type"
+        />
+        <SelectField
+          id="budget"
+          label="Approximate budget"
+          value={form.budget}
+          onChange={set('budget')}
+          options={budgetOptions}
+          placeholder="Select a range"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="timeline" className="meta-label mb-2 block">
+          Desired timeline
+        </label>
+        <input id="timeline" {...inputProps('timeline')} placeholder="e.g. Summer 2027" className={inputClass} />
+      </div>
+
+      <div>
+        <label htmlFor="details" className="meta-label mb-2 block">
+          Project details
+        </label>
+        <textarea
+          id="details"
+          {...inputProps('details')}
+          rows={5}
+          placeholder="A few words about the property, the brief, and what you’re hoping to build…"
+          className={`${inputClass} resize-none`}
+        />
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-6 pt-2">
+        <button
+          type="submit"
+          className="group inline-flex items-center gap-3 border border-ink px-8 py-4 font-sans text-[11px] uppercase tracking-[var(--tracking-meta)] text-ink transition-colors duration-500 hover:bg-ink hover:text-chalk"
+        >
+          Send Enquiry
+        </button>
+        <p className="font-sans text-[10px] font-light uppercase tracking-[var(--tracking-meta)] text-stone">
+          Opens your email client
+        </p>
+      </div>
+    </form>
+  )
+}
+
+export function ContactSection() {
   return (
     <section id="contact" className="relative scroll-mt-24 overflow-hidden bg-ivory px-6 py-28 md:px-10 md:py-44">
       {/* Subtle decorative hairline — vertical hairline + small circle, contact reference */}
@@ -111,95 +210,7 @@ export function ContactSection() {
           </div>
 
           <div className="md:col-span-6 md:col-start-7">
-            <form onSubmit={onSubmit} className="space-y-7">
-              <div className="grid gap-7 sm:grid-cols-2">
-                <div>
-                  <label htmlFor="firstName" className="meta-label mb-2 block">
-                    First name
-                  </label>
-                  <input id="firstName" {...inputProps('firstName')} required autoComplete="given-name" placeholder="First name" className={inputClass} />
-                </div>
-                <div>
-                  <label htmlFor="lastName" className="meta-label mb-2 block">
-                    Last name
-                  </label>
-                  <input id="lastName" {...inputProps('lastName')} required autoComplete="family-name" placeholder="Last name" className={inputClass} />
-                </div>
-              </div>
-
-              <div className="grid gap-7 sm:grid-cols-2">
-                <div>
-                  <label htmlFor="email" className="meta-label mb-2 block">
-                    Email
-                  </label>
-                  <input id="email" {...inputProps('email')} type="email" required autoComplete="email" placeholder="you@example.com" className={inputClass} />
-                </div>
-                <div>
-                  <label htmlFor="phone" className="meta-label mb-2 block">
-                    Phone number
-                  </label>
-                  <input id="phone" {...inputProps('phone')} type="tel" autoComplete="tel" placeholder="+1" className={inputClass} />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="location" className="meta-label mb-2 block">
-                  Project location
-                </label>
-                <input id="location" {...inputProps('location')} placeholder="Neighborhood, city, or region" className={inputClass} />
-              </div>
-
-              <div className="grid gap-7 sm:grid-cols-2">
-                <SelectField
-                  id="type"
-                  label="Project type"
-                  value={form.type}
-                  onChange={set('type')}
-                  options={projectTypes}
-                  placeholder="Select a type"
-                />
-                <SelectField
-                  id="budget"
-                  label="Approximate budget"
-                  value={form.budget}
-                  onChange={set('budget')}
-                  options={budgetOptions}
-                  placeholder="Select a range"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="timeline" className="meta-label mb-2 block">
-                  Desired timeline
-                </label>
-                <input id="timeline" {...inputProps('timeline')} placeholder="e.g. Summer 2027" className={inputClass} />
-              </div>
-
-              <div>
-                <label htmlFor="details" className="meta-label mb-2 block">
-                  Project details
-                </label>
-                <textarea
-                  id="details"
-                  {...inputProps('details')}
-                  rows={5}
-                  placeholder="A few words about the property, the brief, and what you’re hoping to build…"
-                  className={`${inputClass} resize-none`}
-                />
-              </div>
-
-              <div className="flex flex-wrap items-center justify-between gap-6 pt-2">
-                <button
-                  type="submit"
-                  className="group inline-flex items-center gap-3 border border-ink px-8 py-4 font-sans text-[11px] uppercase tracking-[var(--tracking-meta)] text-ink transition-colors duration-500 hover:bg-ink hover:text-chalk"
-                >
-                  Send Enquiry
-                </button>
-                <p className="font-sans text-[10px] font-light uppercase tracking-[var(--tracking-meta)] text-stone">
-                  Opens your email client
-                </p>
-              </div>
-            </form>
+            <ContactForm />
           </div>
         </div>
       </div>

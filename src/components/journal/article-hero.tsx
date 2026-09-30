@@ -30,7 +30,7 @@ export function ArticleHero({ entry }: { entry: JournalEntry }) {
             className="pt-8"
             items={[
               { label: 'Studio', href: '/' },
-              { label: 'Journal', href: '/#journal' },
+              { label: 'Journal', href: '/journal/' },
               { label: entry.title },
             ]}
           />

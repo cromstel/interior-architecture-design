@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { press } from '@/data/site'
 import { RevealText } from '@/components/motion/reveal-text'
 import { AnimatedRule } from '@/components/motion/animated-rule'
@@ -17,14 +18,36 @@ export function Press() {
             <li key={item.publication}>
               <FadeIn delay={0.04 * i}>
                 <AnimatedRule />
-                <div className="group flex items-baseline justify-between gap-6 py-6 transition-colors duration-500 md:py-7">
-                  <span className="font-display text-[clamp(1.3rem,2.6vw,2rem)] font-light text-ink transition-transform duration-500 ease-out group-hover:translate-x-1.5">
-                    {item.publication}
+                <Link
+                  href={`/journal/${item.slug}/`}
+                  className="group flex flex-col gap-3 py-7 md:flex-row md:items-baseline md:gap-8 md:py-8"
+                >
+                  <div className="md:w-56 md:shrink-0">
+                    <p className="font-sans text-[11px] font-light uppercase tracking-[var(--tracking-meta)] text-stone">
+                      {item.publication}
+                      <span className="mx-2" aria-hidden>
+                        ·
+                      </span>
+                      {item.year}
+                    </p>
+                  </div>
+
+                  <div className="md:flex-1">
+                    <h3 className="font-display text-[clamp(1.3rem,2.6vw,2rem)] font-light leading-none text-ink transition-transform duration-500 ease-out group-hover:translate-x-1.5">
+                      {item.title}
+                    </h3>
+                    <p className="mt-4 max-w-xl font-sans text-sm font-light leading-relaxed text-stone">
+                      {item.standfirst}
+                    </p>
+                  </div>
+
+                  <span
+                    aria-hidden
+                    className="shrink-0 self-start text-stone transition-transform duration-500 ease-out group-hover:translate-x-1.5 md:self-auto"
+                  >
+                    →
                   </span>
-                  <span className="font-sans text-[11px] font-light uppercase tracking-[var(--tracking-meta)] text-stone">
-                    {item.year}
-                  </span>
-                </div>
+                </Link>
               </FadeIn>
             </li>
           ))}

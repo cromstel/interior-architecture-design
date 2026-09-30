@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { testimonials } from '@/data/site'
 import { AnimatedRule } from '@/components/motion/animated-rule'
 import { FadeIn } from '@/components/motion/fade-in'
@@ -27,6 +28,16 @@ export function Testimonials() {
                     </p>
                     <p className="mt-1.5 font-sans text-[10px] font-light uppercase tracking-[var(--tracking-meta)] text-stone">
                       {t.place}
+                    </p>
+                    {/* Attributes the quote to the project it came from, so the
+                        claim is checkable rather than anonymous. */}
+                    <p className="mt-1.5 font-sans text-[10px] font-light uppercase tracking-[var(--tracking-meta)] text-stone">
+                      <Link
+                        href={`/projects/${t.projectSlug}/`}
+                        className="border-b border-transparent transition-colors hover:border-ink/30 hover:text-ink"
+                      >
+                        {t.context}
+                      </Link>
                     </p>
                   </footer>
                 </blockquote>

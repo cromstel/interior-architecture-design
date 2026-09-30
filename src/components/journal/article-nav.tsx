@@ -42,7 +42,7 @@ export function ArticleNav({ slug }: { slug: string }) {
       </div>
       <div className="px-6 py-8 md:px-10">
         <Link
-          href="/#journal"
+          href="/journal/"
           className="font-sans text-[11px] uppercase tracking-[var(--tracking-meta)] text-stone transition-colors hover:text-ink"
         >
           ↑ Back to Journal

@@ -8,7 +8,11 @@ import { cn } from '@/lib/cn'
 
 /**
  * Subtle floating enquiry element. Appears after the visitor begins scrolling;
- * collapses to a pill on mobile. Anchors to the contact section.
+ * collapses to a pill on mobile.
+ *
+ * Links to the dedicated /contact/ route rather than the homepage anchor: it is
+ * rendered on subpages too, where `/#contact` would drop the reader on a
+ * homepage they had already left.
  */
 export function FloatingCta() {
   const [visible, setVisible] = useState(false)
@@ -20,8 +24,8 @@ export function FloatingCta() {
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
 
-    // Vanish once the contact section (which the CTA anchors to) is on screen,
-    // so it never sits on top of the form or footer.
+    // Vanish once a contact section is on screen, so it never sits on top of a
+    // form. The id exists on the homepage section and on /contact/.
     const target = document.getElementById('contact')
     let observer: IntersectionObserver | undefined
     if (target && 'IntersectionObserver' in window) {
@@ -37,6 +41,8 @@ export function FloatingCta() {
     }
   }, [])
 
+  // On /contact/ the section is the page, so the CTA would only ever point at
+  // what is already on screen.
   const show = visible && !overContact
 
   return (
@@ -50,7 +56,7 @@ export function FloatingCta() {
           className="fixed z-30 bottom-5 left-1/2 -translate-x-1/2 md:bottom-8 md:right-8 md:left-auto md:translate-x-0"
         >
           <Link
-            href="/#contact"
+            href="/contact/"
             className={cn(
               'group flex items-center gap-2.5 border backdrop-blur-md transition-colors duration-500',
               'border-ink/20 bg-chalk/80 px-5 py-3 text-ink hover:bg-ink hover:text-chalk',

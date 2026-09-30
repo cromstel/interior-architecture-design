@@ -1,3 +1,5 @@
+import Link from 'next/link'
+import { ArrowUpRight } from 'lucide-react'
 import { RevealText } from '@/components/motion/reveal-text'
 import { FadeIn } from '@/components/motion/fade-in'
 
@@ -27,6 +29,54 @@ export function Philosophy() {
             age, light is treated as part of the architecture, and every object is considered in
             relation to the space around it.
           </p>
+
+          <div className="mt-10 max-w-2xl space-y-6 md:mt-12">
+            <p className="font-sans text-sm font-light leading-relaxed text-stone md:text-base">
+              This is an unfashionable position, and it is deliberate. The temptation in interior
+              work is to treat the room as a surface to be finished — to arrive at the end of a
+              project with everything specified and nothing resolved. We work the other way around.
+              A room is settled long before anything is placed in it, by the height of its ceiling,
+              by the direction it faces, and by what the light does across an ordinary afternoon in
+              March. Everything after that is a matter of not getting in the way.
+            </p>
+
+            <p className="font-sans text-sm font-light leading-relaxed text-stone md:text-base">
+              The second discipline is subtraction. Twice as many materials are brought to a project
+              as will ever survive in the finished room, and the work is holding the line — letting
+              each remaining material be itself rather than competing for attention. A room with
+              three honest materials feels richer than one with nine that are merely present, and it
+              is far easier to live in.
+            </p>
+
+            <p className="font-sans text-sm font-light leading-relaxed text-stone md:text-base">
+              The third is time. Stone is honed rather than polished because a hand will reach for
+              it every day. Timber is left to silver where weather will reach it, and deepened
+              where it will not. A finish chosen for how it looks on the day it is installed is a
+              finish that will be wrong within a year; the work should improve for as long as the
+              building stands.
+            </p>
+
+            <p className="font-sans text-sm font-light leading-relaxed text-stone md:text-base">
+              In an old building, the original should still be readable a century from now. New work
+              is reversible wherever it can be, and honest about what it is — we do not disguise the
+              new as old, and we do not strip away what was there in order to make our own decision
+              look cleaner. The house was standing before us, and it will be standing after.
+            </p>
+          </div>
+
+          <FadeIn delay={0.1} className="mt-10">
+            <Link
+              href="/about/"
+              className="group inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[var(--tracking-meta)] text-ink"
+            >
+              Read the studio’s approach
+              <ArrowUpRight
+                size={13}
+                strokeWidth={1.5}
+                className="transition-transform duration-500 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
+            </Link>
+          </FadeIn>
         </FadeIn>
       </div>
     </section>

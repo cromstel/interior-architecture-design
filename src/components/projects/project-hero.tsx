@@ -30,7 +30,7 @@ export function ProjectHero({ project }: { project: Project }) {
             className="mb-8"
             items={[
               { label: 'Studio', href: '/' },
-              { label: 'Selected Work', href: '/#projects' },
+              { label: 'Selected Work', href: '/projects/' },
               { label: project.title },
             ]}
           />
