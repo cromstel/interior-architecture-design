@@ -37,37 +37,47 @@
   # Fingerprinted build output: immutable.
   ExpiresDefault                          "access plus 1 year"
   ExpiresByType text/html                 "access plus 0 seconds"
-  ExpiresByType application/xml           "access plus 1 year"
   ExpiresByType image/avif                "access plus 1 year"
   ExpiresByType image/svg+xml             "access plus 1 year"
   ExpiresByType font/woff2                "access plus 1 year"
-  # These carry no hash, so they must revalidate.
-  ExpiresByType text/plain                "access plus 0 seconds"
+  # These carry no content hash, so they get a short TTL rather than a year.
+  ExpiresByType text/plain                "access plus 1 hour"
+  ExpiresByType application/xml           "access plus 1 hour"
 </IfModule>
 
-# Cache-Control to match, for proxies that ignore Expires.
+# Cache-Control to match, for proxies and browsers that ignore Expires.
 <IfModule mod_headers.c>
-  <FilesMatch "^/_next/static/">
+  # DirectoryMatch, not FilesMatch: FilesMatch tests the *basename* only, so a
+  # pattern like "^/_next/static/" never matches and the rule silently does
+  # nothing. DirectoryMatch tests the filesystem path. The first version of this
+  # file used FilesMatch and every chunk fell back to the host's 7-day default.
+  <DirectoryMatch "/_next/static/">
     Header set Cache-Control "public, max-age=31536000, immutable"
-  </FilesMatch>
+  </DirectoryMatch>
   <FilesMatch "\.html$">
     Header set Cache-Control "public, max-age=0, must-revalidate"
   </FilesMatch>
-  # The RSC payloads that back client-side navigation are content-addressed by
-  # build, not by filename, so they are safer revalidating than caching forever.
-  <FilesMatch "\.txt$">
-    Header set Cache-Control "public, max-age=0, must-revalidate"
+  # Unhashed, so not immutable. Covers robots.txt, sitemap.xml and the RSC
+  # payloads that back client-side navigation.
+  <FilesMatch "\.(xml|txt)$">
+    Header set Cache-Control "public, max-age=3600"
   </FilesMatch>
   <FilesMatch "\.(avif|woff2)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 </IfModule>
 
-# --- Correct MIME for the static shell payloads ----------------------------
-# These are fetched as RSC payloads over fetch(), not navigated to, but some
-# hosts will happily serve them as text/plain. Keep it explicit.
+# --- MIME types ------------------------------------------------------------
+# Without an explicit image/avif the host falls back to text/plain for every
+# photograph. Browsers still decode them inside <img>, so the site *looks*
+# right, but the wrong type also drags them into the text compression filter
+# below — which re-compresses 300 KB of AVIF for nothing — and breaks direct
+# navigation to an image URL.
 <IfModule mod_mime.c>
   AddType text/plain .txt
+  AddType image/avif .avif
+  AddType font/woff2 .woff2
+  AddType image/svg+xml .svg
 </IfModule>
 
 # --- 404 -------------------------------------------------------------------

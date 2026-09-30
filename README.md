@@ -149,7 +149,12 @@ The build emits a fully static `out/` directory (with `404.html` and
 `robots.txt`). Deploy `out/` to any static host.
 
 Live at <https://interior-design.cromstelit.com/>, served from
-`/home/<user>/domains/cromstelit.com/public_html/Interior-design` on Hostinger.
+`/home/<user>/domains/cromstelit.com/public_html/interior-design` on Hostinger.
+The path is all lowercase, and the subdomain's vhost root must match it exactly:
+Linux filesystems are case-sensitive, so `Interior-design` and `interior-design`
+are different directories and a mismatch shows up as a bare 404 rather than an
+error.
+
 The canonical origin lives in `SITE_ORIGIN` (`src/lib/site-config.ts`); change
 that one value and rebuild when the host moves.
 
