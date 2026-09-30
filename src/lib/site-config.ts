@@ -1,11 +1,22 @@
 import { site } from '@/data/config'
 
+/**
+ * Canonical origin. Every canonical link, `og:url`, Twitter image, sitemap
+ * entry and JSON-LD `@id` is derived from this, so it must equal the host the
+ * site is actually served from.
+ *
+ * The studio is published at `interior-design.cromstelit.com`. When this moves
+ * to the apex domain, change this one value and rebuild — nothing else in the
+ * codebase hardcodes a host.
+ */
+export const SITE_ORIGIN = 'https://interior-design.cromstelit.com'
+
 export const siteConfig = {
-  baseUrl: 'https://citgroupandvale.com',
+  baseUrl: SITE_ORIGIN,
   title: 'citgroup & Vale — Interior Architecture & Design | New York',
   description:
     'citgroup & Vale is a New York interior architecture and design studio creating refined residential, hospitality, and commercial spaces.',
-  metadataBase: 'https://citgroupandvale.com',
+  metadataBase: SITE_ORIGIN,
   ogImage: '/images/og/og-citgroup-and-vale.jpg',
 } as const
 

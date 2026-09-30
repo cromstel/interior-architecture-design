@@ -1,8 +1,8 @@
 # citgroup & Vale — Website
 
-The website for [citgroup & Vale](https://citgroupandvale.com), a New York interior
-architecture and design studio. An editorial, static-first site: 11-section homepage,
-six full project case studies, and three journal articles.
+The website for citgroup & Vale, a New York interior architecture and design studio.
+An editorial, static-first site: 11-section homepage, six full project case studies,
+and three journal articles. Published at <https://interior-design.cromstelit.com/>.
 
 ## Stack
 
@@ -146,11 +146,31 @@ src/
 
 The build emits a fully static `out/` directory (with `404.html` and
 `projects/…/index.html`, `journal/…/index.html`, plus generated `sitemap.xml` and
-`robots.txt`). Deploy `out/` to any static host (Netlify, Vercel, S3/CloudFront, etc.).
+`robots.txt`). Deploy `out/` to any static host.
 
-`sitemap.xml` and `robots.txt` are produced by `src/app/sitemap.ts` and
-`src/app/robots.ts` and derive from the data layer, so they cannot drift from the
-routes that exist.
+Live at <https://interior-design.cromstelit.com/>, served from
+`/home/<user>/domains/cromstelit.com/public_html/Interior-design` on Hostinger.
+The canonical origin lives in `SITE_ORIGIN` (`src/lib/site-config.ts`); change
+that one value and rebuild when the host moves.
+
+### What must ship alongside the HTML
+
+Three things in `out/` look like build noise and are not. Removing any of them
+breaks the site, so deploy the directory wholesale:
+
+- **`*.txt` static shell payloads** (`index.txt`, `__next._full.txt`,
+  `__next._index.txt`, `__next._tree.txt`, `__next.__PAGE__.txt`). The App Router
+  client appends `.txt` to the pathname when it fetches an RSC payload, so
+  `/projects/…/` becomes `/projects/…/index.txt`. Without these, every `<Link>`
+  falls back to a full page load.
+- **`_next/`**, which must keep its fingerprinted filenames — the cache headers
+  treat them as immutable.
+- **`404.html`**, referenced by the `ErrorDocument` directive.
+
+`public/.htaccess` is copied into the export and supplies the compression and
+cache headers the host does not set by itself. On Apache/LiteSpeed it is
+required; on Netlify/Vercel/Cloudflare it is inert and their native config
+applies instead.
 
 ### Auditing
 
@@ -158,7 +178,7 @@ routes that exist.
 text assets, and `Cache-Control` headers — so a local Lighthouse run reflects a
 production deployment rather than a bare file server.
 
-Measured with Lighthouse 12, mobile emulation, against the local audit server.
+Measured with Lighthouse 12, mobile emulation.
 **Accessibility 100, best practices 100, SEO 100, CLS 0** on every run — those
 do not move. Performance does, and the spread is ambient, not code:
 

@@ -1,0 +1,78 @@
+# Apache / LiteSpeed configuration for the static export in out/.
+#
+# A static export ships no server config, so the host has to be told to do two
+# things this project depends on. Without them the site is measurably slower
+# and every visitor re-downloads code on each visit:
+#
+#   1. Compress the text payloads. The homepage is ~956 KB of JS/CSS/HTML
+#      uncompressed, which Brotli brings to roughly 255 KB.
+#   2. Send long-lived cache headers for the fingerprinted build output.
+#      Everything under _next/static/ has a content hash in its filename, so it
+#      is safe to cache forever; the HTML must not be.
+#
+# Nothing here rewrites URLs. The export already emits trailing-slash
+# directories containing index.html, which the host serves as-is.
+
+# --- Compression -----------------------------------------------------------
+# Only text formats. AVIF and WOFF2 are already compressed, so running them
+# through deflate would cost CPU and save nothing.
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml
+  AddOutputFilterByType DEFLATE application/javascript text/javascript
+  AddOutputFilterByType DEFLATE application/json application/xml
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css text/xml
+  AddOutputFilterByType BROTLI_COMPRESS application/javascript text/javascript
+  AddOutputFilterByType BROTLI_COMPRESS application/json application/xml
+  AddOutputFilterByType BROTLI_COMPRESS image/svg+xml
+</IfModule>
+
+# --- Cache headers ---------------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # Fingerprinted build output: immutable.
+  ExpiresDefault                          "access plus 1 year"
+  ExpiresByType text/html                 "access plus 0 seconds"
+  ExpiresByType application/xml           "access plus 1 year"
+  ExpiresByType image/avif                "access plus 1 year"
+  ExpiresByType image/svg+xml             "access plus 1 year"
+  ExpiresByType font/woff2                "access plus 1 year"
+  # These carry no hash, so they must revalidate.
+  ExpiresByType text/plain                "access plus 0 seconds"
+</IfModule>
+
+# Cache-Control to match, for proxies that ignore Expires.
+<IfModule mod_headers.c>
+  <FilesMatch "^/_next/static/">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+  # The RSC payloads that back client-side navigation are content-addressed by
+  # build, not by filename, so they are safer revalidating than caching forever.
+  <FilesMatch "\.txt$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+  <FilesMatch "\.(avif|woff2)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+</IfModule>
+
+# --- Correct MIME for the static shell payloads ----------------------------
+# These are fetched as RSC payloads over fetch(), not navigated to, but some
+# hosts will happily serve them as text/plain. Keep it explicit.
+<IfModule mod_mime.c>
+  AddType text/plain .txt
+</IfModule>
+
+# --- 404 -------------------------------------------------------------------
+# The export emits 404.html at the root; hosts serve it for unknown paths.
+# This makes that explicit and stops directory listings on a miss.
+ErrorDocument 404 /404.html
+
+Options -Indexes
