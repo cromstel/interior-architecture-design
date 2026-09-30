@@ -39,8 +39,12 @@ export function baseSrc(src: string): string {
 /**
  * The 800w candidate for a given path. Derivable for every asset because the
  * small tier is generated for all of them.
+ *
+ * Module-private: it was exported for the hero's CSS `image-set()`, which is
+ * gone now that the hero is an `<img>`. Nothing outside this file needs the
+ * candidate paths individually, only the assembled `srcset`.
  */
-export function smallSrc(src: string): string {
+function smallSrc(src: string): string {
   const base = baseSrc(src)
   return base.replace(AVIF_RE, '.avif').replace(/\.avif$/i, '-sm.avif')
 }
