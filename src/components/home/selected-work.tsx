@@ -135,8 +135,12 @@ function Variant({ project, index }: { project: Project; index: number }) {
       return <VariantBeside project={project} />
     case 4:
       return <VariantLeftEdge project={project} />
-    default:
+    case 5:
       return <VariantOffsetWide project={project} />
+    case 6:
+      return <VariantPortraitLead project={project} />
+    default:
+      return <VariantTallAgainstLedger project={project} />
   }
 }
 
@@ -307,6 +311,82 @@ function VariantLeftEdge({ project }: { project: Project }) {
             </div>
           </FadeIn>
         </div>
+      </div>
+    </div>
+  )
+}
+
+/** 07 · Tribeca Penthouse — full-height portrait leading, title set beside it. */
+function VariantPortraitLead({ project }: { project: Project }) {
+  return (
+    <div className="grid items-end gap-8 md:grid-cols-12 md:gap-8">
+      <div className="md:col-span-7">
+        <OverlayLink slug={project.slug}>
+          <div className="relative aspect-[4/5] overflow-hidden md:-ml-12 lg:-ml-20">
+            <ProjectImage
+              src={project.hero.src}
+              alt={project.hero.alt}
+              sizes="(min-width: 1024px) 58vw, (min-width: 768px) 58vw, 100vw"
+            />
+          </div>
+        </OverlayLink>
+      </div>
+      <div className="md:col-span-4 md:col-start-9 md:pb-4">
+        <FadeIn delay={0.12}>
+          <p className="font-display text-sm italic text-stone">{project.index}</p>
+          <h3 className="mt-4 font-display text-[clamp(2rem,4.2vw,3.6rem)] font-light leading-[1.02] tracking-[-0.01em] text-ink">
+            {project.title}
+          </h3>
+          <MetaLine project={project} />
+          <p className="mt-7 max-w-sm font-sans text-sm font-light leading-relaxed text-stone">
+            {project.summary}
+          </p>
+          <div className="mt-9">
+            <OverlayLink slug={project.slug}>
+              <span className="inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[var(--tracking-meta)] text-ink">
+                View Project <Arrow />
+              </span>
+            </OverlayLink>
+          </div>
+        </FadeIn>
+      </div>
+    </div>
+  )
+}
+
+/** 08 · Baxter Street Residence — a tall image set against a wide ledger. */
+function VariantTallAgainstLedger({ project }: { project: Project }) {
+  return (
+    <div className="grid gap-10 md:grid-cols-12 md:items-center md:gap-8">
+      <div className="md:col-span-4">
+        <FadeIn delay={0.1}>
+          <p className="font-display text-sm italic text-stone">{project.index}</p>
+          <h3 className="mt-4 font-display text-[clamp(1.9rem,4vw,3.4rem)] font-light leading-[1.05] tracking-[-0.01em] text-ink">
+            {project.title}
+          </h3>
+          <MetaLine project={project} />
+          <p className="mt-7 max-w-sm font-sans text-sm font-light leading-relaxed text-stone">
+            {project.summary}
+          </p>
+          <div className="mt-9">
+            <OverlayLink slug={project.slug}>
+              <span className="inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[var(--tracking-meta)] text-ink">
+                View Project <Arrow />
+              </span>
+            </OverlayLink>
+          </div>
+        </FadeIn>
+      </div>
+      <div className="md:col-span-7 md:col-start-6">
+        <OverlayLink slug={project.slug}>
+          <div className="relative aspect-[3/4] overflow-hidden md:ml-8 lg:ml-14">
+            <ProjectImage
+              src={project.hero.src}
+              alt={project.hero.alt}
+              sizes="(min-width: 1024px) 58vw, (min-width: 768px) 58vw, 100vw"
+            />
+          </div>
+        </OverlayLink>
       </div>
     </div>
   )

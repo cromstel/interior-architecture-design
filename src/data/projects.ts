@@ -289,6 +289,91 @@ export function projects(): Project[] {
         },
       ],
     },
+    {
+      slug: 'tribeca-penthouse',
+      index: '07',
+      title: 'Tribeca Penthouse',
+      location: 'Tribeca, New York',
+      category: 'Residential Interior',
+      year: '2024',
+      area: '3,100 sq ft',
+      intro:
+        'A top-floor apartment in a 1912 cast-iron building, opened from a warren of small rooms into one long room that holds the width of the building and the whole of the day.',
+      summary:
+        'A 3,100 sq ft Tribeca penthouse interior renovation, opening a cast-iron loft across its full width so that the north light reaches every part of the plan.',
+      // `-lg` was shrunk to 2000px by scripts/shrink-oversized-avif.mjs.
+      hero: img('tribeca-penthouse', 'penthouse-living', 'The main room of the Tribeca Penthouse, tall casement windows along the full width of the building.', 'landscape'),
+      chapters: [
+        img('tribeca-penthouse', 'penthouse-dining', 'The dining end of the Tribeca Penthouse, a plaster wall behind a single pendant.', 'landscape'),
+        img('tribeca-penthouse', 'penthouse-kitchen', 'The Tribeca Penthouse kitchen, dark cabinetry and a single slab of stone.', 'portrait'),
+        img('tribeca-penthouse', 'penthouse-bedroom', 'A bedroom in the Tribeca Penthouse, linen and pale plaster in low northern light.', 'landscape'),
+      ],
+      details: [
+        img('tribeca-penthouse', 'penthouse-stone-detail', 'A honed stone detail at the Tribeca Penthouse kitchen.', 'landscape'),
+        img('tribeca-penthouse', 'penthouse-plaster-wall', 'Hand-finished plaster on the Tribeca Penthouse dining wall, raking light across the surface.', 'portrait'),
+      ],
+      finalImage: img('tribeca-penthouse', 'penthouse-view', 'The view north from the Tribeca Penthouse at the end of the day.', 'wide'),
+      notes: [
+        {
+          heading: 'One room, the width of the building',
+          body: 'The original plan had been cut into five rooms across a fifty-foot span, which meant that a person at either end never saw the other. Removing the partitions recovered the full width in a single move. The columns that remain were already set at the spacing that made the long room work, so the plan was drawn around them rather than over them.',
+        },
+        {
+          heading: 'The north light problem',
+          body: 'A north-facing apartment is a generous thing to have and a difficult one to light. No direct sun reaches the plan, so the rooms had been relying almost entirely on lamps. The work was to make the daylight itself carry the space — which meant keeping the window reveals deep and unpainted, and refusing the temptation to fill the floor with furniture.',
+        },
+        {
+          heading: 'Cast iron, left alone',
+          body: 'The columns and the window arches are cast iron, and they are the reason the apartment feels the way it does. Nothing was clad around them and no finish was applied to any of it. A single run of paint — a warm off-white, chosen to sit against the iron rather than to imitate it — was the only concession, and it was made once, across the whole plan.',
+        },
+        {
+          heading: 'A narrow family of materials',
+          body: 'Plaster, oak, honed stone, and iron. Four materials for the entire apartment. The restraint was the point: in a room this long and this evenly lit, every additional material would have been competing with the daylight rather than adding to it.',
+        },
+      ],
+    },
+    {
+      slug: 'baxter-street-residence',
+      index: '08',
+      title: 'Baxter Street Residence',
+      location: 'Nolita, New York',
+      category: 'Architecture + Interior Design',
+      year: '2023',
+      area: '2,400 sq ft',
+      intro:
+        'A narrow house on Baxter Street, built new in 1912 and altered so many times it had lost its stair — returned to a plan that could carry a family for another century.',
+      summary:
+        'New residential architecture in Nolita — a 2,400 sq ft house built on a 20-foot lot, organised around a rebuilt stair and a courtyard that brings light to the centre of the plan.',
+      hero: img('baxter-street-residence', 'baxter-stair', 'The rebuilt stair at Baxter Street Residence, white oak treads in a narrow white-plastered shaft.', 'portrait'),
+      chapters: [
+        img('baxter-street-residence', 'baxter-kitchen', 'The Baxter Street Residence kitchen, opening to the stair hall.', 'landscape'),
+        img('baxter-street-residence', 'baxter-living', 'The main room at Baxter Street Residence, extending the full depth of the house.', 'landscape'),
+        img('baxter-street-residence', 'baxter-bath', 'A stone-lined bathroom at Baxter Street Residence, lit from above.', 'portrait'),
+      ],
+      details: [
+        img('baxter-street-residence', 'baxter-tile', 'Travertine tile at the Baxter Street Residence bathroom threshold.', 'landscape'),
+        img('baxter-street-residence', 'baxter-hallway', 'The upper hallway at Baxter Street Residence, light from the courtyard.', 'landscape'),
+      ],
+      finalImage: img('baxter-street-residence', 'baxter-evening', 'Baxter Street Residence in the early evening, the street lights coming up.', 'wide'),
+      notes: [
+        {
+          heading: 'A house that had lost its stair',
+          body: 'Three different staircases had been inserted into this twenty-foot lot over its life, each in a different position, and none of them reached the upper floor comfortably. The house read as a warren because the circulation was fighting the plan. Rebuilding the stair on the party line — straight, tall, and lit from above — reorganised everything above it.',
+        },
+        {
+          heading: 'The courtyard',
+          body: 'On a lot this narrow the centre of the plan is the darkest part, and the only real remedy is to bring the outside into the middle. A small courtyard was cut where the old service wing had been, which gives the stair and the two rooms that face it daylight from above rather than from the street. It is the reason the house feels larger than its footprint.',
+        },
+        {
+          heading: 'Travertine, used once',
+          body: 'Stone appears in exactly one place in this house: the bathroom floor and threshold, laid as a single run of honed travertine. Used once and used deliberately, it carries the weight of the whole material story without ever becoming a theme.',
+        },
+        {
+          heading: 'Built to be altered again',
+          body: 'The plan is deliberately plain where it can be. Walls are load-bearing where they need to be and demountable where they do not, and the services run in a spine that a future owner could open without demolition. A house that has been altered three times in a century should be built so that a fourth is possible.',
+        },
+      ],
+    },
   ] as const satisfies Omit<Project, 'prevSlug' | 'nextSlug' | 'seo'>[]
 
   return raw.map((p, i, arr) => ({

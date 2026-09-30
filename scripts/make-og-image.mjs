@@ -90,10 +90,20 @@ const journalHeroes = collectHeroes('src/data/journal.ts')
 // A silent partial parse is worse than a hard failure: it would leave stale
 // cards behind and quietly break the og:image on pages that still reference
 // them. If either module stops parsing the way we expect, stop.
-for (const [label, found, expected] of [
-  ['projects.ts', projectHeroes, 6],
-  ['journal.ts', journalHeroes, 3],
+//
+// The expected count is derived from the number of entries in the source rather
+// than hardcoded, so adding a project or article does not require editing this
+// script. The guard still catches a genuine parse failure: a `hero:` that is no
+// longer a recognised call form yields fewer heroes than there are `slug:`
+// declarations, which is what this compares.
+const entryCount = (file) =>
+  [...read(file).matchAll(/^\s*slug:\s*'([^']+)',/gm)].length
+
+for (const [label, found] of [
+  ['projects.ts', projectHeroes],
+  ['journal.ts', journalHeroes],
 ]) {
+  const expected = entryCount(`src/data/${label}`)
   if (found.length !== expected) {
     console.error(
       `Expected ${expected} hero(s) in src/data/${label} but parsed ${found.length}. ` +

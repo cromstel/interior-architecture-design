@@ -41,6 +41,17 @@ const S = {
   M1: '1550053808-52a75a05955d', // black marble closeup
   M2: '1764021996050-a9936cf2a431', // grey marble, white veins (landscape)
   M3: '1780253460298-8a8b0a4d0600', // travertine tiles (portrait)
+  // Additional sources for the 2023 Penthouse and 2024 Tribeca project.
+  // Reusing existing keys above is the cheaper path — only fetch what is new.
+  B1: '1586023492125-27b2c045efd7', // dining room, pendant light, plaster walls
+  B2: '1493809842364-78817add7ffb', // open living space, large windows (landscape)
+  B3: '1600210492486-724fe5c67fb0', // reading corner, armchair, tall bookcase
+  B4: '1600566753086-00f18fb6b3ea', // neutral bedroom, linen, soft daylight
+  T1: '1600607687939-ce8a6c25118c', // stair hall, white oak treads (portrait)
+  T2: '1600585154340-be6161a56a0c', // kitchen island, dark cabinetry (landscape)
+  T3: '1600607687920-4e2a09cf159d', // travertine bathroom, stone tub
+  T4: '1600566753190-17f0baa2a6c3', // plaster wall texture, shadow
+  T5: '1600585154526-990dced4db0d', // city view from an interior window
 }
 
 /**
@@ -101,6 +112,24 @@ const ITEMS = [
   { src: 'M2', out: 'images/projects/hudson-house/hudson-house-stone-detail.jpg' },
   { src: 'H1', out: 'images/projects/hudson-house/hudson-house-hallway.jpg' },
   { src: 'A3', out: 'images/projects/hudson-house/hudson-house-orchard.jpg', lg: true },
+  // Tribeca Penthouse (project 07)
+  { src: 'B2', out: 'images/projects/tribeca-penthouse/penthouse-living.jpg', lg: true },
+  { src: 'B1', out: 'images/projects/tribeca-penthouse/penthouse-dining.jpg' },
+  { src: 'B3', out: 'images/projects/tribeca-penthouse/penthouse-reading.jpg' },
+  { src: 'B4', out: 'images/projects/tribeca-penthouse/penthouse-bedroom.jpg' },
+  { src: 'T2', out: 'images/projects/tribeca-penthouse/penthouse-kitchen.jpg' },
+  { src: 'M2', out: 'images/projects/tribeca-penthouse/penthouse-stone-detail.jpg' },
+  { src: 'T4', out: 'images/projects/tribeca-penthouse/penthouse-plaster-wall.jpg' },
+  { src: 'T5', out: 'images/projects/tribeca-penthouse/penthouse-view.jpg', lg: true },
+  // Baxter Street Residence (project 08)
+  { src: 'T1', out: 'images/projects/baxter-street-residence/baxter-stair.jpg', lg: true },
+  { src: 'T2', out: 'images/projects/baxter-street-residence/baxter-kitchen.jpg' },
+  { src: 'B1', out: 'images/projects/baxter-street-residence/baxter-living.jpg' },
+  { src: 'T3', out: 'images/projects/baxter-street-residence/baxter-bath.jpg' },
+  { src: 'M3', out: 'images/projects/baxter-street-residence/baxter-tile.jpg' },
+  { src: 'H1', out: 'images/projects/baxter-street-residence/baxter-hallway.jpg' },
+  { src: 'B3', out: 'images/projects/baxter-street-residence/baxter-study.jpg' },
+  { src: 'B2', out: 'images/projects/baxter-street-residence/baxter-evening.jpg', lg: true },
   // Studio founders
   { src: 'P1', out: 'images/studio/founders-claire-citgroup.jpg' },
   { src: 'P2', out: 'images/studio/founders-ethan-vale.jpg' },
