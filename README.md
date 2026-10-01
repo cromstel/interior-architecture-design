@@ -23,7 +23,7 @@ npm run build            # production build into out/ + all three verifiers
 npm run typecheck        # tsc --noEmit
 npm run links:verify     # every press row resolves to a published article
 npm run crawl            # every internal link resolves, every og card exists, one h1 per page
-npm run gutter:verify   # every max-w-7xl is centred, so the banner and body share one left axis
+npm run gutter:verify   # every max-w-7xl is centred, and all five routes share one vertical gap
 npm run serve            # serve the out/ export (npx serve)
 npm run serve:audit      # serve out/ with compression + cache headers, for auditing
 npm run images:shrink    # cap any AVIF above 400 KB to 2000px / q58
@@ -145,6 +145,15 @@ had happened three times (the hero plate, and the project and journal index
 wrappers), reaching 416px apart at 1920. `npm run gutter:verify` fails the build
 on any uncentred `max-w-7xl`; it reads the built HTML, so it needs no browser.
 
+The same check also enforces the **vertical** gap: all five routes open their
+body 112px below the breadcrumb strip, via `PAGE_TOP_GAP` in `src/lib/spacing.ts`.
+That value had drifted to three — 57px on /projects/, 112px on three others, and
+209px on /journal/ — so the identical banner produced a different first line on
+every route. Two rules make it hold: the constant must not live in a `'use client'`
+module (a server component cannot read one, and the rendered `class` silently
+becomes an error message), and the index components must not add their own top
+padding on top of it. Both are asserted.
+
 **The comments on the `S` map in `fetch-images.mjs` are not reliable.** They
 record what each id was assumed to be when added, and several are wrong — `T4` is
 filed as "plaster wall texture" but returns a suburban house, `L5` as "wood
@@ -180,6 +189,7 @@ src/
   data/                     all copy + types
   lib/
     cn.ts ratios.ts                 styling / layout helpers
+    spacing.ts                      PAGE_TOP_GAP, shared vertical rhythm (server-safe)
     seo.ts schema.ts derived.ts     metadata, JSON-LD, computed fields
     responsive-image.ts             srcset + tier helpers (client-safe)
     image-large-tiers.ts            GENERATED: true width of each -lg asset

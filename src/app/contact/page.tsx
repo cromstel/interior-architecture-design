@@ -1,8 +1,9 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 import { buildMeta } from '@/lib/seo'
 import { site } from '@/data/config'
 import { engagement } from '@/data/site'
 import { PageHero } from '@/components/page-hero'
+import { PAGE_TOP_GAP } from '@/lib/spacing'
 import { ContactForm } from '@/components/home/contact'
 import { AnimatedRule } from '@/components/motion/animated-rule'
 import { RevealText } from '@/components/motion/reveal-text'
@@ -13,12 +14,12 @@ import { srcSetFor } from '@/lib/responsive-image'
 const hero = lg('/images/hero/hero-contact.avif')
 
 export const metadata: Metadata = buildMeta({
-  title: 'Contact — Citgroup & Vale',
+  title: 'Contact â€” Citgroup & Vale',
   description:
     'Start a project with citgroup & Vale. The studio is at 48 Walker Street, New York, and takes a limited number of residential, hospitality, and commercial commissions each year.',
   path: '/contact/',
   ogImage: '/images/og/contact.jpg',
-  ogImageAlt: 'Start a project with citgroup & Vale — interior architecture and design, 48 Walker Street, New York.',
+  ogImageAlt: 'Start a project with citgroup & Vale â€” interior architecture and design, 48 Walker Street, New York.',
 })
 
 export default function ContactPage() {
@@ -28,13 +29,13 @@ export default function ContactPage() {
       <PageHero
         src={hero}
         alt="A studio corridor of warm light and planting, receding toward a glazed opening at the far end."
-        eyebrow={`${site.address.city} · Est. ${site.estYear}`}
+        eyebrow={`${site.address.city} Â· Est. ${site.estYear}`}
         title="Contact"
         lede="We take on a limited number of residential, hospitality, and commercial projects each year, and we turn down more than we accept. Tell us a little about yours."
         crumb="Contact"
       />
 
-      <section id="contact" className="scroll-mt-24 px-6 py-20 md:px-10 md:py-28">
+      <section id="contact" className={`scroll-mt-24 px-6 md:px-10 ${PAGE_TOP_GAP}`}>
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-14 md:grid-cols-12 md:gap-10">
             <div className="md:col-span-4">
@@ -110,3 +111,4 @@ export default function ContactPage() {
     </>
   )
 }
+

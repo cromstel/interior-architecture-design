@@ -17,8 +17,8 @@
  *
  * Run: `node scripts/verify-gutter.mjs` (or `npm run gutter:verify`)
  */
-import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs'
-import { join, dirname } from 'node:path'
+import { readFileSync, existsSync, readdirSync } from 'node:fs'
+import { join, dirname, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -113,6 +113,58 @@ for (const route of routes) {
   }
 }
 
+// --- A client-only constant must not be interpolated into server markup -----
+//
+// This is the check that would have caught the first attempt at PAGE_TOP_GAP.
+// Exported from a `'use client'` module, a constant read by a server component
+// is replaced at build time with a stub that throws when invoked, so the emitted
+// class attribute becomes an error message. It compiled, and every other
+// verifier passed, because they all read class *names* and never execute JS.
+// Rejecting the stub text is the only place this shows up.
+const CLIENT_STUB = 'Attempted to call'
+
+for (const file of walk(out)) {
+  const label = relative(out, file).split('\\').join('/')
+  if (readFileSync(file, 'utf8').includes(CLIENT_STUB)) {
+    problems.push(
+      `${label}  — a client component was interpolated into server markup.\n` +
+        '      Constants shared with server components must live outside a ' +
+        "'use client' module.",
+    )
+  }
+}
+
+// --- Vertical: every route must open its body at the same distance ----------
+//
+// The identical hero led to three different first lines: 57px on /projects/,
+// 112px on /about/ /services/ /contact/, and 209px on /journal/. The value is
+// shared as PAGE_TOP_GAP, so the check below is on the source rather than on
+// rendered pixels — the two index components also carry their own top padding,
+// which is what made the drift possible in the first place.
+const topGapSource = readFileSync(join(root, 'src', 'lib', 'spacing.ts'), 'utf8')
+const expectedGap = topGapSource.match(/PAGE_TOP_GAP\s*=\s*'([^']+)'/)?.[1]
+if (!expectedGap) {
+  problems.push('src/lib/spacing.ts  — PAGE_TOP_GAP is not defined; the routes cannot agree on the top gap')
+} else {
+  for (const route of routes) {
+    const page = readFileSync(join(root, 'src', 'app', route, 'page.tsx'), 'utf8')
+    if (!page.includes('PAGE_TOP_GAP')) {
+      problems.push(`${route}/  — the opening section does not use PAGE_TOP_GAP ("${expectedGap}")`)
+    }
+  }
+  // The index components must not add their own top padding on top of it.
+  for (const [file, match] of [
+    ['projects/project-index.tsx', 'border-t'],
+    ['journal/journal-index.tsx', 'journal-lead'],
+  ]) {
+    const src = readFileSync(join(root, 'src', 'components', file), 'utf8')
+    const line = src.split('\n').find((l) => l.includes(match)) ?? ''
+    if (/max-w-7xl[^"]*\bpt-\d/.test(line)) {
+      problems.push(`components/${file}  — adds its own top padding, which double-counts against PAGE_TOP_GAP`)
+    }
+  }
+}
+
 if (problems.length) {
   console.error('Gutter mismatch:\n')
   for (const p of problems) console.error('  ' + p)
@@ -120,4 +172,7 @@ if (problems.length) {
   process.exit(1)
 }
 
-console.log(`Gutter verified on ${routes.length} routes: every max-w-7xl is centred, banner and body on one axis.`)
+console.log(
+  `Gutter verified on ${routes.length} routes: every max-w-7xl is centred, ` +
+    `and all five open their body at the same vertical gap (${expectedGap}).`,
+)

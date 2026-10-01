@@ -1,8 +1,9 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 import { buildMeta } from '@/lib/seo'
 import { site } from '@/data/config'
 import { studioStory } from '@/data/site'
 import { PageHero } from '@/components/page-hero'
+import { PAGE_TOP_GAP } from '@/lib/spacing'
 import { Founders } from '@/components/about/founders'
 import { FadeIn } from '@/components/motion/fade-in'
 import { AnimatedRule } from '@/components/motion/animated-rule'
@@ -13,12 +14,12 @@ import { srcSetFor } from '@/lib/responsive-image'
 const hero = lg('/images/hero/hero-about.avif')
 
 export const metadata: Metadata = buildMeta({
-  title: 'About the Studio — Citgroup & Vale',
+  title: 'About the Studio â€” Citgroup & Vale',
   description:
     'citgroup & Vale is a New York interior architecture studio founded in 2016, working from a Walker Street loft on a deliberately limited number of projects each year.',
   path: '/about/',
   ogImage: '/images/og/about.jpg',
-  ogImageAlt: 'The citgroup & Vale studio — interior architecture and design, New York.',
+  ogImageAlt: 'The citgroup & Vale studio â€” interior architecture and design, New York.',
 })
 
 export default function AboutPage() {
@@ -32,13 +33,13 @@ export default function AboutPage() {
       <PageHero
         src={hero}
         alt="Honed travertine in the studio material library, its warm surface and pale grout filling the frame."
-        eyebrow={`Est. ${site.estYear} · ${site.city}`}
+        eyebrow={`Est. ${site.estYear} Â· ${site.city}`}
         title="The Studio"
         lede={studioStory.lede}
         crumb="The Studio"
       />
 
-      <section className="px-6 py-20 md:px-10 md:py-28">
+      <section className={`px-6 md:px-10 ${PAGE_TOP_GAP}`}>
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-12 md:grid-cols-12 md:gap-10">
             <div className="md:col-span-3">
@@ -107,3 +108,4 @@ export default function AboutPage() {
     </>
   )
 }
+

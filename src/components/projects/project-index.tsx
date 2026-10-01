@@ -42,7 +42,9 @@ export function ProjectIndex({ projects }: { projects: Project[] }) {
           it the archive sits hard against the page gutter while everything else
           centres, which puts it on a different left axis from the banner above
           it. See scripts/verify-gutter.mjs. */}
-      <div className="mx-auto max-w-7xl border-t border-ink/10 pt-10 md:pt-14">
+      {/* The page's opening section supplies the top padding (PAGE_TOP_GAP), so
+          this adds none of its own. */}
+      <div className="mx-auto max-w-7xl border-t border-ink/10">
         <div className="grid gap-8 md:grid-cols-12 md:gap-10">
           <p className="meta-label md:col-span-3">
             {projects.length} projects

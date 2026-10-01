@@ -24,8 +24,9 @@ export function JournalIndex({ entries }: { entries: JournalEntry[] }) {
         // `mx-auto` for the same reason as the body sections: without it the
         // list sits against the page gutter while everything else centres, on a
         // different left axis from the banner above. See
-        // scripts/verify-gutter.mjs.
-        <section aria-labelledby="journal-lead" className="mx-auto max-w-7xl pt-16 md:pt-24">
+        // scripts/verify-gutter.mjs. The page's own section supplies the top
+        // padding (PAGE_TOP_GAP), so this adds none.
+        <section aria-labelledby="journal-lead" className="mx-auto max-w-7xl">
           <article>
             <a href={`/journal/${lead.slug}/`} className="group block">
               <div className="grid gap-8 md:grid-cols-12 md:items-center md:gap-10">

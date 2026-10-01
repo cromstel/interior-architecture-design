@@ -1,7 +1,8 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 import { buildMeta } from '@/lib/seo'
 import { serviceDetail, processStages, engagement } from '@/data/site'
 import { PageHero } from '@/components/page-hero'
+import { PAGE_TOP_GAP } from '@/lib/spacing'
 import { FadeIn } from '@/components/motion/fade-in'
 import { AnimatedRule } from '@/components/motion/animated-rule'
 import { RevealText } from '@/components/motion/reveal-text'
@@ -11,12 +12,12 @@ import { srcSetFor } from '@/lib/responsive-image'
 const hero = lg('/images/hero/hero-services.avif')
 
 export const metadata: Metadata = buildMeta({
-  title: 'Services — Citgroup & Vale',
+  title: 'Services â€” Citgroup & Vale',
   description:
-    'Interior architecture, residential interiors, renovation, furniture and art, and hospitality — the five disciplines citgroup & Vale practises, and how an engagement begins.',
+    'Interior architecture, residential interiors, renovation, furniture and art, and hospitality â€” the five disciplines citgroup & Vale practises, and how an engagement begins.',
   path: '/services/',
   ogImage: '/images/og/services.jpg',
-  ogImageAlt: 'Interior architecture, residential interiors, renovation, furniture and art, and hospitality — the five disciplines practised by citgroup & Vale.',
+  ogImageAlt: 'Interior architecture, residential interiors, renovation, furniture and art, and hospitality â€” the five disciplines practised by citgroup & Vale.',
 })
 
 export default function ServicesPage() {
@@ -28,11 +29,11 @@ export default function ServicesPage() {
         alt="A plastered interior wall in warm ochre, its niches holding the day's light."
         eyebrow="Five disciplines"
         title="Services"
-        lede="We work across five disciplines that in practice overlap almost completely — a townhouse renovation is architecture, interiors, millwork, furniture, and art, and treating them separately is what makes projects slow down."
+        lede="We work across five disciplines that in practice overlap almost completely â€” a townhouse renovation is architecture, interiors, millwork, furniture, and art, and treating them separately is what makes projects slow down."
         crumb="Services"
       />
 
-      <section aria-labelledby="disciplines" className="px-6 py-20 md:px-10 md:py-28">
+      <section aria-labelledby="disciplines" className={`px-6 md:px-10 ${PAGE_TOP_GAP}`}>
         <div className="mx-auto max-w-7xl">
           <AnimatedRule />
           <h2 id="disciplines" className="sr-only">
@@ -142,3 +143,4 @@ export default function ServicesPage() {
     </>
   )
 }
+

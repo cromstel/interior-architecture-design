@@ -36,8 +36,15 @@ type PageHeroProps = {
  * The plate's container must stay identical to the body sections below it
  * (`mx-auto max-w-7xl`). A narrower, un-centred plate lines up below the
  * 1280px cap and drifts above it, so the two only ever agree by accident.
- * `scripts/measure-gutter.cjs` checks the left edge of the banner against the
- * first body section at six viewport widths.
+ * `scripts/verify-gutter.mjs` fails the build on any uncentred `max-w-7xl`.
+ *
+ * Vertical spacing is shared as `PAGE_TOP_GAP` from `src/lib/spacing.ts` because
+ * the five routes have to agree on it. It is the space between this breadcrumb
+ * strip and the first body content, and it had drifted to three different values
+ * — 57px on /projects/, 112px on /about/ /services/ /contact/, and 209px on
+ * /journal/ — so the same banner led to a different first line on every route.
+ * It lives in `lib/` rather than here because this module is `'use client'`, and
+ * a server component cannot read a constant out of one.
  */
 export function PageHero({
   src,
