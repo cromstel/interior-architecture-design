@@ -34,7 +34,7 @@ export default function AboutPage() {
         eyebrow={`Est. ${site.estYear} · ${site.city}`}
         title="The Studio"
         lede={studioStory.lede}
-        crumb="Studio"
+        crumb="The Studio"
       />
 
       <section className="px-6 py-20 md:px-10 md:py-28">

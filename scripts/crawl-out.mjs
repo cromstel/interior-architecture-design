@@ -74,12 +74,26 @@ const missingOg = [...ogImages].filter(([src]) => !existsSync(join(out, src.repl
 // refactor of the shared header.
 const noH1 = []
 const noCanonical = []
+// A breadcrumb that repeats a label renders as "A / A" and collides as a React
+// key. React only warns about the key at runtime, so a static export can ship
+// the mistake with nothing in the build log. The trail is read straight off the
+// HTML instead.
+const dupCrumbs = []
 for (const page of pages) {
   const label = relative(out, page).split(sep).join('/')
   const html = readFileSync(page, 'utf8')
   const h1s = html.match(/<h1[\s>]/g) || []
   if (h1s.length !== 1) noH1.push(`${label}  (${h1s.length} h1)`)
   if (!/<link rel="canonical"/.test(html)) noCanonical.push(label)
+
+  const nav = html.match(/<nav aria-label="Breadcrumb"[\s\S]*?<\/nav>/)?.[0]
+  if (nav) {
+    const crumbs = [...nav.matchAll(/<(?:a|span)(?![^>]*aria-hidden)[^>]*>([^<]+)<\/(?:a|span)>/g)]
+      .map((m) => m[1].trim())
+      .filter((t) => t && t !== '/')
+    const repeated = [...new Set(crumbs.filter((c, i) => crumbs.indexOf(c) !== i))]
+    if (repeated.length) dupCrumbs.push(`${label}  ->  ${repeated.join(', ')}`)
+  }
 }
 
 console.log(`Pages crawled        : ${pages.length}`)
@@ -93,8 +107,10 @@ console.log(`Pages without 1 h1   : ${noH1.length}`)
 for (const p of noH1.slice(0, 15)) console.log(`  ${p}`)
 console.log(`Pages missing canon. : ${noCanonical.length}`)
 for (const p of noCanonical.slice(0, 15)) console.log(`  ${p}`)
+console.log(`Duplicate crumbs     : ${dupCrumbs.length}`)
+for (const p of dupCrumbs.slice(0, 15)) console.log(`  ${p}`)
 
-if (broken.length || missingOg.length || noH1.length || noCanonical.length) {
+if (broken.length || missingOg.length || noH1.length || noCanonical.length || dupCrumbs.length) {
   console.error('\nThe export has a broken internal reference. See scripts/crawl-out.mjs.')
   process.exit(1)
 }
