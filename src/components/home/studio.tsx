@@ -36,7 +36,13 @@ export function Studio() {
                   alt={founder.imageAlt}
                   ratio="portrait"
                   amount={0.07}
-                  sizes="(min-width: 768px) 45vw, 100vw"
+                  // A pixel cap, not a viewport percentage. The card is half of
+                  // a two-column grid inside a max-w-7xl container with a 64px
+                  // gap, so it settles at 608px and stops growing however wide
+                  // the viewport gets. `45vw` kept climbing past that and
+                  // over-selected: 864px promised for a 608px box at 1920, and
+                  // it overstated at every width except roughly 1024px.
+                  sizes="(min-width: 768px) 608px, calc(100vw - 3rem)"
                 />
               </FadeIn>
               <div className="mt-8 md:mt-10">

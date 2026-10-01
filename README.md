@@ -63,6 +63,15 @@ width of each one — generated, never hand-edited — because a width descripto
 has to equal the file's true pixel width for the browser to select correctly.
 `images:widths` also asserts that the 800px and 1200px tiers have not drifted.
 
+**Write `sizes` as a pixel cap when the layout caps the box.** An image inside a
+`max-w-*` container settles at a fixed width and stops growing with the viewport,
+so a `vw` value keeps climbing past it and the browser selects a larger candidate
+than the element can display. Two of these existed and are now fixed: the About
+page founders (`32vw` promised 320px for a 196px box) and the homepage studio
+portrait (`45vw` promised 864px for a 608px box at 1920). Derive the cap from
+the grid — `col-span-N` of a 12-column grid inside a `max-w-7xl` container is a
+constant, not a percentage.
+
 Candidates are derived from the path by `src/lib/responsive-image.ts` — pure
 string manipulation with no filesystem access, so it is safe in client bundles.
 The naming convention is fixed, which is why no disk probing is needed.
@@ -154,6 +163,7 @@ src/
   components/
     motion/                 RevealText, MaskedImage, ParallaxImage, FadeIn, AnimatedRule
     home/                   11 homepage sections
+    about/                  founders
     projects/               project-hero, project-sequence, project-index, project-prev-next
     journal/                article-hero, article-body, article-nav, journal-index
     page-hero.tsx          photographic hero banner for the five routes
