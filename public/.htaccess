@@ -47,13 +47,29 @@
 
 # Cache-Control to match, for proxies and browsers that ignore Expires.
 <IfModule mod_headers.c>
-  # DirectoryMatch, not FilesMatch: FilesMatch tests the *basename* only, so a
-  # pattern like "^/_next/static/" never matches and the rule silently does
-  # nothing. DirectoryMatch tests the filesystem path. The first version of this
-  # file used FilesMatch and every chunk fell back to the host's 7-day default.
-  <DirectoryMatch "/_next/static/">
+  # Fingerprinted build output, matched on the filename rather than the path.
+  #
+  # Two earlier attempts used the wrong lever. `FilesMatch "^/_next/static/"`
+  # matched nothing, because FilesMatch tests the basename only and no basename
+  # contains a slash. `DirectoryMatch "/_next/static/"` is correct in principle
+  # but is silently ignored on this host: it needs a directory-context
+  # override, which a subdomain vhost rooted in a subdirectory of another domain
+  # does not grant. Measured live — chunks served the host's 7-day default
+  # while this very file's woff2 rule applied fine, proving mod_headers is
+  # working and only the directory context was unavailable.
+  #
+  # So the path cannot be tested, and the hash in the name is used instead. Every
+  # chunk Next emits is named `2er9am7s7p5uk.js` / `1wxykey_xr_7w.css`, and all
+  # 22 js/css files in the export live under _next/static/ with no exceptions.
+  #
+  # The negative lookahead is load-bearing. `_buildManifest.js`,
+  # `_clientMiddlewareManifest.js` and `_ssgManifest.js` are emitted under those
+  # exact names on every build, so their content changes while their URL does
+  # not. Marking them immutable would pin browsers to a stale build after the
+  # next deploy, so anything starting with an underscore is excluded.
+  <FilesMatch "^(?!_).*\.(js|css)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
-  </DirectoryMatch>
+  </FilesMatch>
   <FilesMatch "\.html$">
     Header set Cache-Control "public, max-age=0, must-revalidate"
   </FilesMatch>
