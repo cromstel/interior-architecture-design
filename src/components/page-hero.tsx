@@ -32,6 +32,12 @@ type PageHeroProps = {
  * to stay visible on the first screen) and the plate is anchored to the lower
  * left, where the scrim is deepest. Text rises from an offset rather than
  * fading, so the copy is in the first paint instead of waiting on hydration.
+ *
+ * The plate's container must stay identical to the body sections below it
+ * (`mx-auto max-w-7xl`). A narrower, un-centred plate lines up below the
+ * 1280px cap and drifts above it, so the two only ever agree by accident.
+ * `scripts/measure-gutter.cjs` checks the left edge of the banner against the
+ * first body section at six viewport widths.
  */
 export function PageHero({
   src,
@@ -57,11 +63,17 @@ export function PageHero({
           animate={{ y: 0 }}
           transition={{ duration: 1, ease: EASE, delay: 0.15 }}
         >
-          <div className="max-w-5xl">
+          {/* `mx-auto max-w-7xl` is the same container every body section uses,
+              which is what keeps the title on the page's left axis. This was
+              `max-w-5xl` with no `mx-auto`: below the 1280px cap both fill the
+              available width so the gutter matched, and the break was invisible
+              on a laptop. Above the cap the body centres while the banner stayed
+              hard against the page padding, drifting to 280px apart at 1920. */}
+          <div className="mx-auto w-full max-w-7xl">
             <p className="font-sans text-[11px] font-light uppercase leading-loose tracking-[var(--tracking-meta)] text-chalk/75">
               {eyebrow}
             </p>
-            <h1 className="mt-4 text-balance font-display text-[clamp(2.4rem,6.6vw,5.8rem)] font-light leading-[0.98] tracking-[-0.015em] text-chalk">
+            <h1 className="mt-4 max-w-5xl text-balance font-display text-[clamp(2.4rem,6.6vw,5.8rem)] font-light leading-[0.98] tracking-[-0.015em] text-chalk">
               {title}
             </h1>
             {lede && (

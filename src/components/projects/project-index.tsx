@@ -38,7 +38,11 @@ export function ProjectIndex({ projects }: { projects: Project[] }) {
 
   return (
     <div>
-      <div className="max-w-7xl border-t border-ink/10 pt-10 md:pt-14">
+      {/* `mx-auto` here for the same reason the body sections have it: without
+          it the archive sits hard against the page gutter while everything else
+          centres, which puts it on a different left axis from the banner above
+          it. See scripts/verify-gutter.mjs. */}
+      <div className="mx-auto max-w-7xl border-t border-ink/10 pt-10 md:pt-14">
         <div className="grid gap-8 md:grid-cols-12 md:gap-10">
           <p className="meta-label md:col-span-3">
             {projects.length} projects
@@ -51,7 +55,7 @@ export function ProjectIndex({ projects }: { projects: Project[] }) {
         </div>
       </div>
 
-      <section aria-labelledby="archive-by-category" className="max-w-7xl pt-20 md:pt-28">
+      <section aria-labelledby="archive-by-category" className="mx-auto max-w-7xl pt-20 md:pt-28">
         <AnimatedRule />
         <h2
           id="archive-by-category"

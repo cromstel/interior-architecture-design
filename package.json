@@ -5,10 +5,11 @@
   "main": "index.js",
   "scripts": {
     "dev": "next dev -p 5712",
-    "build": "next build && npm run images:verify && npm run links:verify && npm run crawl",
+    "build": "next build && npm run images:verify && npm run links:verify && npm run crawl && npm run gutter:verify",
     "typecheck": "tsc --noEmit",
     "links:verify": "node scripts/verify-press-links.mjs",
     "crawl": "node scripts/crawl-out.mjs",
+    "gutter:verify": "node scripts/verify-gutter.mjs",
     "serve": "npx serve out",
     "serve:audit": "node scripts/serve-audit.cjs",
     "images:fetch": "node scripts/fetch-images.mjs",

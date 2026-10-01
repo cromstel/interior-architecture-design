@@ -21,7 +21,11 @@ export function JournalIndex({ entries }: { entries: JournalEntry[] }) {
   return (
     <div>
       {lead && (
-        <section aria-labelledby="journal-lead" className="max-w-7xl pt-16 md:pt-24">
+        // `mx-auto` for the same reason as the body sections: without it the
+        // list sits against the page gutter while everything else centres, on a
+        // different left axis from the banner above. See
+        // scripts/verify-gutter.mjs.
+        <section aria-labelledby="journal-lead" className="mx-auto max-w-7xl pt-16 md:pt-24">
           <article>
             <a href={`/journal/${lead.slug}/`} className="group block">
               <div className="grid gap-8 md:grid-cols-12 md:items-center md:gap-10">
@@ -69,7 +73,7 @@ export function JournalIndex({ entries }: { entries: JournalEntry[] }) {
         </section>
       )}
 
-      <section aria-labelledby="journal-all" className="max-w-7xl pt-24 md:pt-32">
+      <section aria-labelledby="journal-all" className="mx-auto max-w-7xl pt-24 md:pt-32">
         <AnimatedRule />
         <div className="flex items-end justify-between gap-6 pt-8">
           <h2

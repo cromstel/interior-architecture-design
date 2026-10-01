@@ -23,6 +23,7 @@ npm run build            # production build into out/ + all three verifiers
 npm run typecheck        # tsc --noEmit
 npm run links:verify     # every press row resolves to a published article
 npm run crawl            # every internal link resolves, every og card exists, one h1 per page
+npm run gutter:verify   # every max-w-7xl is centred, so the banner and body share one left axis
 npm run serve            # serve the out/ export (npx serve)
 npm run serve:audit      # serve out/ with compression + cache headers, for auditing
 npm run images:shrink    # cap any AVIF above 400 KB to 2000px / q58
@@ -135,6 +136,14 @@ and journal templates, the 404, and the five standalone routes. `PageHero` is th
 shared banner for those five; each takes a `-lg` hero from `public/images/hero/`
 and is the LCP image on its page, so each page preloads it with the same
 `srcSetFor` candidate list and `sizes="100vw"` the element uses.
+
+**The banner's container must match the body sections exactly**: `mx-auto
+max-w-7xl` on both. A narrower or un-centred container lines up perfectly while
+the viewport is under the 1280px cap, because both then fill the available width
+— so the break is invisible on a laptop and only appears on a wide monitor. It
+had happened three times (the hero plate, and the project and journal index
+wrappers), reaching 416px apart at 1920. `npm run gutter:verify` fails the build
+on any uncentred `max-w-7xl`; it reads the built HTML, so it needs no browser.
 
 **The comments on the `S` map in `fetch-images.mjs` are not reliable.** They
 record what each id was assumed to be when added, and several are wrong — `T4` is
