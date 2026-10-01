@@ -113,8 +113,29 @@ for (const [label, found] of [
   }
 }
 
+// The five standalone routes take their share card from the same hero banner
+// the page opens on, so a shared link matches what a visitor would land on.
+const routeHeroes = [
+  { slug: 'projects', path: '/images/hero/hero-projects.avif' },
+  { slug: 'about', path: '/images/hero/hero-about.avif' },
+  { slug: 'services', path: '/images/hero/hero-services.avif' },
+  { slug: 'journal', path: '/images/hero/hero-journal.avif' },
+  { slug: 'contact', path: '/images/hero/hero-contact.avif' },
+]
+
+// Guard the route list the same way: a hero that does not resolve to a file on
+// disk would silently leave the page falling back to the site-wide card.
+const missingRoutes = routeHeroes.filter((r) => !resolveSource(r.path))
+if (missingRoutes.length) {
+  console.error('Route hero(s) not found on disk:')
+  for (const r of missingRoutes) console.error(`  ${r.slug}  ${r.path}`)
+  console.error('\nRun `npm run images:fetch` first.')
+  process.exit(1)
+}
+
 const targets = [
   { slug: 'og-citgroup-and-vale', path: '/images/hero/hero-homepage.avif' },
+  ...routeHeroes,
   ...projectHeroes,
   ...journalHeroes,
 ]

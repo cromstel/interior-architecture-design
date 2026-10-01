@@ -19,9 +19,10 @@ No server runtime — everything is prerendered to `.html` at export time.
 
 ```bash
 npm run dev              # local dev server (port 5712)
-npm run build            # production build into out/ + both verifiers
+npm run build            # production build into out/ + all three verifiers
 npm run typecheck        # tsc --noEmit
 npm run links:verify     # every press row resolves to a published article
+npm run crawl            # every internal link resolves, every og card exists, one h1 per page
 npm run serve            # serve the out/ export (npx serve)
 npm run serve:audit      # serve out/ with compression + cache headers, for auditing
 npm run images:shrink    # cap any AVIF above 400 KB to 2000px / q58
@@ -120,6 +121,18 @@ copy. `/#studio`, `/#services` and `/#contact` are teasers; `/about/`, `/service
 and `/contact/` carry the full argument in `studioStory`, `serviceDetail` and
 `engagement`. Keeping one paragraph on both URLs would make them duplicate content.
 
+Every route opens on a full-bleed photographic banner — the homepage, the project
+and journal templates, the 404, and the five standalone routes. `PageHero` is the
+shared banner for those five; each takes a `-lg` hero from `public/images/hero/`
+and is the LCP image on its page, so each page preloads it with the same
+`srcSetFor` candidate list and `sizes="100vw"` the element uses.
+
+**The comments on the `S` map in `fetch-images.mjs` are not reliable.** They
+record what each id was assumed to be when added, and several are wrong — `T4` is
+filed as "plaster wall texture" but returns a suburban house, `L5` as "wood
+panelling" but returns a construction crane. Eyeball a source at full size before
+using it for anything visible.
+
 **Press rows are internal links.** `press` in `site.ts` names a `slug` that must
 exist in `journal.ts`, because the site ships no external links. `npm run
 links:verify` (part of `build`) fails when a row dangles or a `Press`-category
@@ -143,7 +156,7 @@ src/
     home/                   11 homepage sections
     projects/               project-hero, project-sequence, project-index, project-prev-next
     journal/                article-hero, article-body, article-nav, journal-index
-    page-header.tsx         masthead shared by the editorial routes
+    page-hero.tsx          photographic hero banner for the five routes
     hero-backdrop.tsx navigation.tsx footer.tsx floating-cta.tsx …
   data/                     all copy + types
   lib/

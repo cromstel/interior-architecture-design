@@ -1,22 +1,31 @@
 import type { Metadata } from 'next'
 import { buildMeta } from '@/lib/seo'
 import { serviceDetail, processStages, engagement } from '@/data/site'
-import { PageHeader } from '@/components/page-header'
+import { PageHero } from '@/components/page-hero'
 import { FadeIn } from '@/components/motion/fade-in'
 import { AnimatedRule } from '@/components/motion/animated-rule'
 import { RevealText } from '@/components/motion/reveal-text'
+import { lg } from '@/lib/image-variants'
+import { srcSetFor } from '@/lib/responsive-image'
+
+const hero = lg('/images/hero/hero-services.avif')
 
 export const metadata: Metadata = buildMeta({
   title: 'Services — Citgroup & Vale',
   description:
     'Interior architecture, residential interiors, renovation, furniture and art, and hospitality — the five disciplines citgroup & Vale practises, and how an engagement begins.',
   path: '/services/',
+  ogImage: '/images/og/services.jpg',
+  ogImageAlt: 'Interior architecture, residential interiors, renovation, furniture and art, and hospitality — the five disciplines practised by citgroup & Vale.',
 })
 
 export default function ServicesPage() {
   return (
     <>
-      <PageHeader
+      <link rel="preload" as="image" imageSrcSet={srcSetFor(hero)} imageSizes="100vw" />
+      <PageHero
+        src={hero}
+        alt="A plastered interior wall in warm ochre, its niches holding the day's light."
         eyebrow="Five disciplines"
         title="Services"
         lede="We work across five disciplines that in practice overlap almost completely — a townhouse renovation is architecture, interiors, millwork, furniture, and art, and treating them separately is what makes projects slow down."

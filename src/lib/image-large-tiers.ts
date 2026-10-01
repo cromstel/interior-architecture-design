@@ -11,7 +11,12 @@
  */
 export const LARGE_TIER_WIDTHS: Readonly<Record<string, number>> = {
   '/images/hero/hero-404-lg.avif': 2000,
+  '/images/hero/hero-about-lg.avif': 2000,
+  '/images/hero/hero-contact-lg.avif': 2400,
   '/images/hero/hero-homepage-lg.avif': 2400,
+  '/images/hero/hero-journal-lg.avif': 2000,
+  '/images/hero/hero-projects-lg.avif': 2000,
+  '/images/hero/hero-services-lg.avif': 2000,
   '/images/journal/library/journal-3-library-hero-lg.avif': 2000,
   '/images/journal/light/journal-2-light-hero-lg.avif': 2400,
   '/images/journal/stone/journal-1-stone-hero-lg.avif': 2000,

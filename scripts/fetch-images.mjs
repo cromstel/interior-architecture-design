@@ -60,6 +60,26 @@ const S = {
 const ITEMS = [
   // Homepage hero + OG
   { src: 'L2', out: 'images/hero/hero-homepage.jpg', lg: true },
+  // Route hero banners. A4 and S4 were already in the S map but unused, so the
+  // two index pages get photographs that appear nowhere else on the site. The
+  // remaining three reuse established sources — the pipeline already reuses one
+  // source across many outputs (L2 alone feeds seven), so this is consistent
+  // with how the library is built, and no new network source was needed.
+  //
+  // About and Contact originally drew L5 and T5, which rendered as a yellow
+  // construction crane and a night street with a bus. Both fought the palette
+  // and neither said anything about a studio. They are replaced with M3 (warm
+  // travertine, which is the material library the About page is about) and H1
+  // (a warm corridor receding into light, which invites without shouting).
+  //
+  // Every hero source here was eyeballed at full size first. The comments on
+  // the S map are from when each id was added and are not reliable: T4 is
+  // filed as "plaster wall texture" but actually returns a suburban house.
+  { src: 'A4', out: 'images/hero/hero-projects.jpg', lg: true },
+  { src: 'S4', out: 'images/hero/hero-journal.jpg', lg: true },
+  { src: 'M3', out: 'images/hero/hero-about.jpg', lg: true },
+  { src: 'L3', out: 'images/hero/hero-services.jpg', lg: true },
+  { src: 'H1', out: 'images/hero/hero-contact.jpg', lg: true },
   // Mercer Street Loft
   { src: 'L1', out: 'images/projects/mercer-street-loft/mercer-loft-hero.jpg', lg: true },
   { src: 'L2', out: 'images/projects/mercer-street-loft/mercer-loft-living.jpg' },

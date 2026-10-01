@@ -2,24 +2,35 @@ import type { Metadata } from 'next'
 import { buildMeta } from '@/lib/seo'
 import { site } from '@/data/config'
 import { studioStory } from '@/data/site'
-import { PageHeader } from '@/components/page-header'
+import { PageHero } from '@/components/page-hero'
 import { FadeIn } from '@/components/motion/fade-in'
 import { AnimatedRule } from '@/components/motion/animated-rule'
 import { RevealText } from '@/components/motion/reveal-text'
 import { lg } from '@/lib/image-variants'
 import { srcSetFor } from '@/lib/responsive-image'
 
+const hero = lg('/images/hero/hero-about.avif')
+
 export const metadata: Metadata = buildMeta({
   title: 'About the Studio — Citgroup & Vale',
   description:
     'citgroup & Vale is a New York interior architecture studio founded in 2016, working from a Walker Street loft on a deliberately limited number of projects each year.',
   path: '/about/',
+  ogImage: '/images/og/about.jpg',
+  ogImageAlt: 'The citgroup & Vale studio — interior architecture and design, New York.',
 })
 
 export default function AboutPage() {
   return (
     <>
-      <PageHeader
+      {/* The banner is the LCP image, so it is preloaded explicitly. The
+          candidate list and `sizes` match the `<img>` in `HeroBackdrop`
+          exactly, which is what stops the preload and the element from
+          resolving to different files. */}
+      <link rel="preload" as="image" imageSrcSet={srcSetFor(hero)} imageSizes="100vw" />
+      <PageHero
+        src={hero}
+        alt="Honed travertine in the studio material library, its warm surface and pale grout filling the frame."
         eyebrow={`Est. ${site.estYear} · ${site.city}`}
         title="The Studio"
         lede={studioStory.lede}
