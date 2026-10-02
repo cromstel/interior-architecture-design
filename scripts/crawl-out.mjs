@@ -69,6 +69,40 @@ for (const page of pages) {
 const broken = [...links].filter(([href]) => !resolves(href))
 const missingOg = [...ogImages].filter(([src]) => !existsSync(join(out, src.replace(/^\/+/, ''))))
 
+// Next 16.3.6 writes each page's RSC payload into a nested directory while the
+// client router fetches it as one flat filename, so every <Link> on the site
+// prefetched a 404 until scripts/fix-rsc-payloads.mjs added the flat alias.
+// The crawler only follows hrefs, so it never saw these -- they are requested
+// at runtime by the router from a URL that appears in no HTML. Assert the alias
+// for each page directory so the bug cannot ship again.
+const missingPayload = []
+for (const page of pages) {
+  const dir = dirname(page)
+  const pageDir = relative(out, dir).split(sep).join('/')
+  const entries = readdirSync(dir, { withFileTypes: true })
+  for (const entry of entries) {
+    // The nested form: __next.<segment>/[$d$slug/]__PAGE__.txt
+    if (!entry.isDirectory() || !entry.name.startsWith('__next.')) continue
+    const nested = join(dir, entry.name)
+    const tails = readdirSync(nested, { withFileTypes: true })
+    const payloads = []
+    for (const t of tails) {
+      if (t.isFile() && t.name === '__PAGE__.txt') payloads.push(entry.name + '/__PAGE__.txt')
+      else if (t.isDirectory()) {
+        const deep = readdirSync(join(nested, t.name), { withFileTypes: true })
+        if (deep.some((d) => d.isFile() && d.name === '__PAGE__.txt')) {
+          payloads.push(`${entry.name}/${t.name}/__PAGE__.txt`)
+        }
+      }
+    }
+    for (const payload of payloads) {
+      const flat = payload.replace(/\//g, '.')
+      const label = pageDir === '.' ? '/' : `${pageDir}/`
+      if (!existsSync(join(dir, flat))) missingPayload.push(`${label}${flat}`)
+    }
+  }
+}
+
 // Every page should have exactly one h1 and a canonical, since these are the
 // two things the templates are responsible for and are easy to break in a
 // refactor of the shared header.
@@ -109,10 +143,16 @@ console.log(`Pages missing canon. : ${noCanonical.length}`)
 for (const p of noCanonical.slice(0, 15)) console.log(`  ${p}`)
 console.log(`Duplicate crumbs     : ${dupCrumbs.length}`)
 for (const p of dupCrumbs.slice(0, 15)) console.log(`  ${p}`)
+console.log(`Missing RSC payloads : ${missingPayload.length}`)
+for (const p of missingPayload.slice(0, 15)) console.log(`  ${p}`)
 
-if (broken.length || missingOg.length || noH1.length || noCanonical.length || dupCrumbs.length) {
+if (
+  broken.length || missingOg.length || noH1.length ||
+  noCanonical.length || dupCrumbs.length || missingPayload.length
+) {
   console.error('\nThe export has a broken internal reference. See scripts/crawl-out.mjs.')
   process.exit(1)
 }
 
-console.log('\nEvery internal link resolves, every share card exists, every page has one h1 and a canonical.')
+console.log('\nEvery internal link resolves, every share card exists, every page has one h1 and a canonical,')
+console.log('and every RSC payload resolves under the name the client router requests.')
