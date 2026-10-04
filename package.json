@@ -13,6 +13,7 @@
     "gutter:verify": "node scripts/verify-gutter.mjs",
     "htaccess:verify": "node scripts/verify-htaccess.mjs",
     "pack": "node scripts/pack-deploy.mjs",
+    "probe:waf": "node scripts/probe-waf.mjs",
     "serve": "npx serve out",
     "serve:audit": "node scripts/serve-audit.cjs",
     "images:fetch": "node scripts/fetch-images.mjs",

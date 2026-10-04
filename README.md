@@ -302,6 +302,49 @@ Note that Lighthouse refuses to score the 404 route: the audit server correctly
 returns HTTP 404, which Lighthouse reports as `ERRORED_DOCUMENT_REQUEST` and
 scores 0 across every category. That is the harness, not the page.
 
+#### Auditing the live site is blocked by the host's WAF
+
+Auditing `https://interior-design.cromstelit.com/` directly does not work, and
+the failure looks like a broken site when it is not. `curl` and an ordinary
+Chrome navigation both get `200` and the real 149 KB document, but **Lighthouse
+gets `403`** and records `ERRORED_DOCUMENT_REQUEST` with 0 requests, 0 images and
+0 scripts. PageSpeed Insights is no route either: its unauthenticated quota sits
+behind a shared consumer project that is exhausted for everyone.
+
+So the numbers above come from `serve:audit`, which serves the byte-identical
+`out/` with the same compression and cache headers the host applies. That is
+trustworthy for everything that depends on the build — accessibility, best
+practices, SEO, CLS, the LCP element, render blocking, unused JavaScript. It is
+not trustworthy for absolute LCP/FCP, which need real network latency.
+
+`scripts/probe-waf.mjs` distinguishes the two cases without a full audit:
+
+```
+node scripts/probe-waf.mjs                        # headless Chrome, the default
+node scripts/probe-waf.mjs <url> --headful        # windowed Chrome
+```
+
+It prints the main document's status, byte count and title, and exits 2 when the
+response is the ~3 KB "Checking your browser before accessing" interstitial
+rather than the site. The interstitial is a JS challenge that says "please wait
+for up to 5 seconds", so it polls for up to 45s before deciding — measuring the
+DOM the instant `load` fires only ever sees the challenge.
+
+Two traps when automating this, both of which produced wrong answers first:
+
+- A challenged run still emits a **complete report with real category scores**.
+  Those scores describe a 3 KB challenge page. `runtimeError` and the main
+  document's size are the only reliable discriminators.
+- Lighthouse 12+ writes a **flattened** report (no `lighthouseResult` wrapper)
+  and stores **no page title** — the `document-title` audit lists only failing
+  elements, so on a passing page its `items` is empty. Reading that audit's
+  `title` yields the literal string "Document has a `<title>` element", which
+  rejects every good run.
+
+To get real live numbers, allowlist the audit clients in hPanel rather than
+loosening the site for everyone: exclude Lighthouse and PageSpeed's crawler IP
+ranges from the bot-protection rule for this subdomain only.
+
 ### Host requirements
 
 - **Compression.** The homepage's text payload is ~956 KB uncompressed across 14
