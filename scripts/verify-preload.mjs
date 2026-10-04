@@ -1,30 +1,41 @@
 /**
- * Fails the build if any page preloads the same image srcset more than once.
+ * Checks that each hero's preload and its `<img>` resolve to the same file.
  *
- * Why this is a defect rather than redundancy: Chrome does not merge duplicate
- * preloads. Given two `<link rel="preload" as="image">` for one srcset it
- * discards the preload, the `<img>` then fetches on its own, and the console
- * reports "The resource ... was preloaded using link preload but not used within
- * a few seconds". The preload buys nothing and the warning is noise the reader
- * has to learn to ignore.
+ * History, because the obvious version of this check was wrong and shipped.
+ * It used to fail the build when a page preloaded the same srcset more than
+ * once, on the theory that Chrome discards a duplicate preload and warns
+ * "preloaded but not used". Two mistakes:
  *
- * It happened because `HeroBackdrop` marks its image `fetchPriority="high"`, and
- * Next emits a preload from that on its own -- so the hand-written preload in
- * `app/page.tsx` and `app/not-found.tsx` was a second one for every hero. The
- * comment there claimed the opposite: that omitting `fetchPriority` avoided a
- * duplicate. The duplicate came from the attribute on the `<img>`, which every
- * hero shares, not from the one on the preload.
+ *   1. The warning does not reproduce. With no WAF involved it appears on no
+ *      route at any viewport tried (1440x900, 1920x1080, 390x844). It was
+ *      inferred from `initiator=parser`, which is also what a correctly-used
+ *      preload reports, because a preload and the element coalesce into one
+ *      network request attributed to the parser.
+ *   2. Removing the duplicate is actively harmful. Next 16.3.6 emits the LCP
+ *      preload twice by itself, so the only way to "fix" it was to edit the
+ *      built HTML. React hydrates the preload links it rendered, so deleting one
+ *      makes it discard the server tree and regenerate it client-side. Measured
+ *      by applying the build steps one at a time:
  *
- * A second preload for a *different* srcset is legitimate and must not fail
- * here. Next preloads the LCP image of any route being prefetched, so a page
- * that links to /journal/ carries a preload for a journal hero it never renders.
- * That is prefetch working as intended and it is deliberately allowed.
+ *        raw next build    #418 no    5 payload 404s
+ *        + rsc:fix         #418 no    0
+ *        + payloads:strip  #418 no    0
+ *        + preload:dedupe  #418 YES   0
  *
- * Reads the built HTML, so it measures what the browser actually receives.
+ *      A cosmetic warning is not worth a hydration error.
+ *
+ * So this no longer counts preloads. What it enforces is the invariant that
+ * actually costs the reader something: the preload and the element must agree on
+ * `srcset` and `sizes`, or the browser fetches one file for the preload and a
+ * second, different file for the image. That is the defect the README records
+ * from the original `image-set()` background hero, and it is silent.
+ *
+ * Duplicates are reported as information. A second preload for a *different*
+ * srcset is Next prefetching a linked route and is expected.
  *
  * Run: node scripts/verify-preload.mjs (or `npm run preload:verify`)
  */
-import { readFileSync, readdirSync, existsSync } from 'node:fs'
+import { readdirSync, readFileSync, existsSync } from 'node:fs'
 import { join, dirname, relative, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -47,58 +58,86 @@ function walk(dir, acc = []) {
 
 const pages = walk(out)
 const problems = []
-const stats = { pages: pages.length, preloads: 0, duplicatedPages: 0 }
+const stats = {
+  pages: pages.length,
+  preloads: 0,
+  heroes: 0,
+  agreed: 0,
+  noPreload: 0,
+  duplicateSrcsets: 0,
+}
 
 for (const page of pages) {
   const label = relative(out, page).split(sep).join('/')
   const html = readFileSync(page, 'utf8')
 
-  const preloads = [...html.matchAll(/<link[^>]*rel="preload"[^>]*as="image"[^>]*>/g)].map((m) => {
-    const tag = m[0]
-    const srcset = /imageSrcSet="([^"]*)"/i.exec(tag)?.[1] || ''
-    const sizes = /imageSizes="([^"]*)"/i.exec(tag)?.[1] || '(none)'
-    const priority = /fetchPriority="([^"]*)"/i.exec(tag)?.[1] || '(none)'
-    return { tag, srcset, sizes, priority }
-  })
+  const preloads = [...html.matchAll(/<link[^>]*rel="preload"[^>]*as="image"[^>]*>/g)].map((m) => ({
+    tag: m[0],
+    srcset: /imageSrcSet="([^"]*)"/i.exec(m[0])?.[1] || '',
+    sizes: /imageSizes="([^"]*)"/i.exec(m[0])?.[1] || '',
+  }))
   stats.preloads += preloads.length
 
-  // Group by srcset, which is what makes two preloads duplicates of each other.
   const bySrcset = new Map()
   for (const p of preloads) {
     if (!p.srcset) continue
-    if (!bySrcset.has(p.srcset)) bySrcset.set(p.srcset, [])
-    bySrcset.get(p.srcset).push(p)
+    bySrcset.set(p.srcset, (bySrcset.get(p.srcset) || 0) + 1)
+  }
+  for (const [, n] of bySrcset) if (n > 1) stats.duplicateSrcsets++
+
+  // The hero is the fetchPriority=high image: the LCP element.
+  const heroTag = /<img[^>]*fetchPriority="high"[^>]*>/i.exec(html)?.[0]
+  if (!heroTag) continue
+  stats.heroes++
+
+  const heroSrcset = /srcSet="([^"]*)"/i.exec(heroTag)?.[1] || ''
+  const heroSizes = /sizes="([^"]*)"/i.exec(heroTag)?.[1] || ''
+  if (!heroSrcset) {
+    problems.push(`${label}\n    hero <img> has no srcSet, so no preload can match it`)
+    continue
   }
 
-  for (const [srcset, group] of bySrcset) {
-    if (group.length <= 1) continue
-    stats.duplicatedPages++
-    const sizesSeen = [...new Set(group.map((g) => g.sizes))].join(' vs ')
-    const priorities = [...new Set(group.map((g) => g.priority))].join(' vs ')
+  const norm = (s) => s.replace(/\s+/g, ' ').trim()
+  const match = preloads.find((p) => norm(p.srcset) === norm(heroSrcset))
+  if (!match) {
     problems.push(
-      `${label}\n    srcset : ${srcset}\n    repeats: ${group.length}x  sizes=[${sizesSeen}] fetchpriority=[${priorities}]`
+      `${label}\n    hero srcSet has no matching preload\n      img   : ${heroSrcset}\n      ${preloads.length} preload(s) present, none identical`
     )
+    continue
   }
 
-  // A page with a hero must still have exactly one preload for it. Dropping the
-  // hand-written preload could in principle remove all of them, which would be
-  // worse than the duplicate: no preload at all on the LCP image.
-  const heroImg = /<img[^>]+fetchPriority="high"[^>]*>/i.exec(html)?.[0]
-  if (heroImg && preloads.length === 0) {
-    problems.push(`${label}\n    has a fetchPriority=high image but no image preload at all`)
+  if (norm(match.sizes) !== norm(heroSizes)) {
+    problems.push(
+      `${label}\n    preload and element disagree on sizes, so they can select different files\n` +
+      `      preload : ${match.sizes || '(none)'}\n      element : ${heroSizes || '(none)'}`
+    )
+    continue
   }
+
+  stats.agreed++
 }
 
-console.log(`Pages checked                 : ${stats.pages}`)
-console.log(`Image preloads found          : ${stats.preloads}`)
-console.log(`Pages preloading one srcset 2x: ${stats.duplicatedPages}`)
+console.log(`Pages checked                    : ${stats.pages}`)
+console.log(`Heroes (fetchPriority=high)     : ${stats.heroes}`)
+console.log(`preload and element agree       : ${stats.agreed}`)
+console.log(`Heroes with no matching preload : ${stats.noPreload}`)
+console.log(`Image preloads total            : ${stats.preloads}`)
+console.log(`srcsets preloaded more than once: ${stats.duplicateSrcsets}  (Next emits these; harmless)`)
 
 if (problems.length) {
-  console.error('\nDuplicate image preloads:\n')
-  for (const p of problems) console.error('  ' + p)
-  console.error('\nChrome discards the duplicate and re-fetches, so the preload does nothing.')
-  console.error('See scripts/verify-preload.mjs and the comment in src/app/page.tsx.')
+  console.error('\nPreload and hero element disagree:\n')
+  for (const p of problems.slice(0, 12)) console.error('  ' + p)
+  console.error('\nA mismatch means the browser downloads one file for the preload and another')
+  console.error('for the image. See scripts/verify-preload.mjs.')
   process.exit(1)
 }
 
-console.log('\nEvery page preloads each hero image exactly once.')
+if (stats.agreed !== stats.heroes) {
+  console.error(`\nOnly ${stats.agreed} of ${stats.heroes} heroes agreed.`)
+  process.exit(1)
+}
+
+console.log('')
+console.log('Every hero preload matches its element on srcSet and sizes, so each downloads once.')
+console.log('Duplicate preloads are Next 16.3.6 behaviour and are left in place: removing')
+console.log('them from the served HTML causes a React #418 hydration error.')

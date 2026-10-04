@@ -134,8 +134,42 @@ and `/contact/` carry the full argument in `studioStory`, `serviceDetail` and
 Every route opens on a full-bleed photographic banner — the homepage, the project
 and journal templates, the 404, and the five standalone routes. `PageHero` is the
 shared banner for those five; each takes a `-lg` hero from `public/images/hero/`
-and is the LCP image on its page, so each page preloads it with the same
-`srcSetFor` candidate list and `sizes="100vw"` the element uses.
+and is the LCP image on its page. `HeroBackdrop` marks it `fetchPriority="high"`,
+and Next emits the preload from that, using the same `srcSetFor` candidate list
+and `sizes="100vw"` the element uses.
+
+**Do not "fix" the duplicate preload by editing the built HTML.** Next 16.3.6
+emits the LCP preload twice on its own — with or without `fetchPriority` — and
+the console's "preloaded … but not used" warning was chased down to that. Both
+halves of that fix were wrong:
+
+- The warning does not reproduce. Absent the host's WAF it appears on no route
+  at 1440×900, 1920×1080 or 390×844. It had been inferred from
+  `initiator=parser`, which is also what a *correctly used* preload reports,
+  because the preload and the element coalesce into one network request that is
+  attributed to the parser.
+- Removing the duplicate breaks hydration. React hydrates the preload links it
+  rendered, so deleting one from the served HTML makes it discard the server tree
+  and regenerate it client-side. Measured by applying the build steps one at a
+  time — React error #418 appears only at the last step:
+
+  | build state | #418 | payload 404s |
+  | --- | --- | --- |
+  | raw `next build` | no | 5 |
+  | + `rsc:fix` | no | 0 |
+  | + `payloads:strip` | no | 0 |
+  | + preload dedupe | **yes** | 0 |
+
+`scripts/verify-preload.mjs` therefore checks the invariant that actually costs
+the reader something — that each hero's preload and `<img>` agree on `srcSet` and
+`sizes`, so one file is downloaded rather than two — and reports duplicate
+preloads as information. It no longer fails the build on them.
+
+One console warning remains and is expected: on any page linking to `/journal/`,
+Chrome reports the journal index's first-card hero as "preloaded but not used".
+That is Next prefetching the linked route, which is the behaviour we want.
+Silencing it would mean disabling prefetch, trading real navigation speed for a
+cleaner console.
 
 **The banner's container must match the body sections exactly**: `mx-auto
 max-w-7xl` on both. A narrower or un-centred container lines up perfectly while

@@ -51,15 +51,24 @@ function oversizeFor(amount: number): number {
  * and is the element LCP is actually attributed to. The candidate list is the
  * same `srcSetFor` the preload uses, so the two cannot diverge.
  *
- * There is deliberately no `fetchPriority="high"` on this `<img>`, and removing
- * it fixed a warning rather than losing anything. Next 16 emits a preload from
- * `fetchPriority="high"` *and* an automatic one for the LCP image, so the
- * attribute produced two preloads for a single srcset. Chrome does not merge
- * them: it discards the preload, the `<img>` then fetches on its own, and the
- * console warns that the resource "was preloaded using link preload but not
- * used within a few seconds". The surviving automatic preload already requests
- * the hero at preload priority, so the attribute was buying a duplicate and
- * nothing else. `scripts/verify-preload.mjs` fails the build if this returns.
+ * `fetchPriority="high"` stays. It is the correct attribute for the LCP image
+ * and Next uses it to emit a matching preload, so preload and element resolve
+ * to one file.
+ *
+ * It was briefly removed here, on the theory that the attribute was what
+ * produced Next's duplicate preload and therefore the console's "preloaded but
+ * not used" warning. Both parts of that were wrong. Next emits the LCP preload
+ * twice whether or not the attribute is present, and the warning does not
+ * reproduce locally at any viewport tested. The attribute is semantically right
+ * and was reinstated.
+ *
+ * Do not "fix" the duplicate by deleting a `<link>` from the built HTML. That
+ * was tried and it breaks hydration: React hydrates the preload links it
+ * rendered, so removing one makes it discard the server tree and regenerate it
+ * client-side. Measured -- React error #418 appears only when the duplicate is
+ * stripped from the served HTML, and is absent when it is left alone.
+ * `scripts/verify-preload.mjs` now checks that the preload and the element agree
+ * rather than that there is only one preload.
  */
 
 export function HeroBackdrop({
@@ -87,6 +96,7 @@ export function HeroBackdrop({
         sizes="100vw"
         alt={alt}
         decoding="async"
+        fetchPriority="high"
         className="absolute left-0 right-0 w-full object-cover"
         style={{
           top: `${-buffer}%`,
