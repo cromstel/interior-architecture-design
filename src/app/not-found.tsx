@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { lg } from '@/lib/image-variants'
-import { srcSetFor } from '@/lib/responsive-image'
 import { navLinks } from '@/data/site'
 import { NotFoundHero } from '@/components/not-found-hero'
 
@@ -9,10 +8,13 @@ export default function NotFound() {
 
   return (
     <>
-      {/* `lg()` is resolved here, in the server component, so the client hero
-          never pulls in node:fs. The banner is the LCP image and is preloaded
-          explicitly, with candidates matching the `<img>` in `HeroBackdrop`. */}
-      <link rel="preload" as="image" imageSrcSet={srcSetFor(heroLg)} imageSizes="100vw" />
+      {/* No explicit `<link rel="preload">` here. `HeroBackdrop` marks its image
+          `fetchPriority="high"` and Next emits a preload from that on its own,
+          so a hand-written one becomes a second preload for the same srcset.
+          Chrome does not merge the pair -- it drops the preload and the `<img>`
+          fetches on its own, which is what produced "preloaded but not used
+          within a few seconds" on /about/. `scripts/verify-preload.mjs` fails
+          the build if a page ever preloads one srcset twice. */}
       <NotFoundHero src={heroLg} />
 
       <section className="px-6 py-16 md:px-10 md:py-24">

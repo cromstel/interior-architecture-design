@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "next dev -p 5712",
-    "build": "next build && npm run rsc:fix && npm run images:verify && npm run links:verify && npm run crawl && npm run gutter:verify && npm run htaccess:verify",
+    "build": "next build && npm run rsc:fix && npm run preload:dedupe && npm run images:verify && npm run links:verify && npm run crawl && npm run gutter:verify && npm run htaccess:verify && npm run preload:verify",
+    "preload:dedupe": "node scripts/dedupe-preloads.mjs",
+    "preload:verify": "node scripts/verify-preload.mjs",
     "rsc:fix": "node scripts/fix-rsc-payloads.mjs",
     "typecheck": "tsc --noEmit",
     "links:verify": "node scripts/verify-press-links.mjs",

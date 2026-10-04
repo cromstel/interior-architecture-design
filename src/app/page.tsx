@@ -27,18 +27,15 @@ export const metadata: Metadata = buildMeta({
 export default function HomePage() {
   return (
     <>
-      {/* The hero is the LCP image, so it is preloaded explicitly. The
-          candidate list and `sizes` are identical to the `<img>` in
-          `HeroBackdrop`, which is what guarantees the preload and the element
-          resolve to the same file rather than each fetching one.
-          No `fetchPriority` here: a preload is already high priority, and
-          marking it so makes React emit a second, duplicate preload. */}
-      <link
-        rel="preload"
-        as="image"
-        imageSrcSet={srcSetFor('/images/hero/hero-homepage-lg.avif')}
-        imageSizes="100vw"
-      />
+      {/* No explicit hero preload. `HeroBackdrop` marks its image
+          `fetchPriority="high"` and Next emits a preload from that attribute
+          on its own, so writing one here produced a second preload for the same
+          srcset on the homepage and the 404. Chrome does not merge them: it
+          discards the preload and the `<img>` fetches separately, so the
+          preload bought nothing and the console warned that it went unused.
+          The auto-generated one still carries the same candidate list and
+          `imageSizes` as the `<img>`, which is what keeps them resolving to a
+          single file. `scripts/verify-preload.mjs` enforces exactly one. */}
       <Hero />
       <Intro />
       <SelectedWork

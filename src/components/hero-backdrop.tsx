@@ -49,7 +49,17 @@ function oversizeFor(amount: number): number {
  *
  * An `<img srcset sizes="100vw">` selects on width, fetches exactly one file,
  * and is the element LCP is actually attributed to. The candidate list is the
- * same `srcSetFor` the hero preload uses, so the two cannot diverge.
+ * same `srcSetFor` the preload uses, so the two cannot diverge.
+ *
+ * There is deliberately no `fetchPriority="high"` on this `<img>`, and removing
+ * it fixed a warning rather than losing anything. Next 16 emits a preload from
+ * `fetchPriority="high"` *and* an automatic one for the LCP image, so the
+ * attribute produced two preloads for a single srcset. Chrome does not merge
+ * them: it discards the preload, the `<img>` then fetches on its own, and the
+ * console warns that the resource "was preloaded using link preload but not
+ * used within a few seconds". The surviving automatic preload already requests
+ * the hero at preload priority, so the attribute was buying a duplicate and
+ * nothing else. `scripts/verify-preload.mjs` fails the build if this returns.
  */
 
 export function HeroBackdrop({
@@ -77,7 +87,6 @@ export function HeroBackdrop({
         sizes="100vw"
         alt={alt}
         decoding="async"
-        fetchPriority="high"
         className="absolute left-0 right-0 w-full object-cover"
         style={{
           top: `${-buffer}%`,
