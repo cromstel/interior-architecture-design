@@ -1,3 +1,27 @@
+/**
+ * A studio founder.
+ *
+ * `image` and `imageAlt` are optional so an entry can ship before its portrait
+ * does. Both founders sections fall back to a typographic tile in the same box,
+ * which also keeps `scripts/verify-image-srcset.mjs` honest — it fails the build
+ * on a referenced file that is missing, so an absent portrait has to be absent
+ * from the data rather than pointed at.
+ *
+ * This type exists for that reason. `site` is declared `as const`, so without an
+ * annotation each founder became its own literal type and the array inferred as a
+ * union whose members did not share `image` — every `founder.image` in the
+ * components failed to typecheck. Annotating normalises the union.
+ */
+export type Founder = {
+  readonly name: string
+  readonly role: string
+  readonly bio: string
+  readonly focus: readonly string[]
+  readonly note: string
+  readonly image?: string
+  readonly imageAlt?: string
+}
+
 export const site = {
   name: 'Citgroup & Vale',
   wordmark: 'citgroup & VALE',
@@ -38,6 +62,16 @@ export const site = {
       url: 'https://www.linkedin.com/company/citgroup-vale',
     },
   },
+  // Order matters: this is the reading order in both founders sections, and the
+  // landing page lays them out left to right. Samuel is last, on the right.
+  //
+  // `satisfies Founder[]`, not an annotation of the form `founders: Founder[] =`.
+  // TypeScript 7.0.2 mis-parses that annotation inside an object literal -- it
+  // treats `founders:` as a label and `Founder[]` as an element access, giving
+  // "An element access expression should take an argument". Reproduced on a
+  // three-line file with no other changes, and `readonly Founder[]` fails the
+  // same way. `satisfies` checks the same shape and keeps the literal narrowing
+  // the components rely on. Do not "tidy" this back into an annotation.
   founders: [
     {
       name: 'Claire citgroup',
@@ -57,7 +91,18 @@ export const site = {
       image: '/images/studio/founders-ethan-vale.avif',
       imageAlt: 'Portrait of Ethan Vale, Principal Architect of Citgroup & Vale, in black and white.',
     },
-  ],
+    {
+      name: 'Samuel Lamptey',
+      role: 'Chief Executive',
+      bio: 'Samuel runs the studio: the commissions, the fee structure, who is engaged and on what terms, and the pace the work is allowed to take. He came to architecture from construction and site management, which is why he is the one who decides what a client is actually buying when a drawing is finished. He is accountable for the studio being the same thing in ten years as it is this year.',
+      focus: ['Client & commissions', 'Fee & contract', 'Site & delivery', 'Studio direction'],
+      note: 'The work has to survive the people who commissioned it.',
+      // No portrait yet. `Founder.image` is optional and both founders sections
+      // fall back to a typographic tile, so the entry can ship ahead of the
+      // photograph. The image path belongs in `public/images/studio/` as
+      // founders-samuel-lamptey.avif, plus the -sm tier, before this is set.
+    },
+  ] satisfies Founder[],
   story: 'Founded in New York in 2016, citgroup & Vale works with a small collaborative team of architects, interior designers, craftspeople, fabricators, artists, and builders.',
 } as const
 

@@ -24,26 +24,64 @@ export function Studio() {
         />
         <p className="meta-label-sand mt-6">Founders</p>
 
-        <div className="mt-16 grid gap-16 md:mt-28 md:grid-cols-2 md:gap-24">
-          {site.founders.map((founder, i) => (
-            <article
-              key={founder.name}
-              className={i === 1 ? 'md:mt-24 lg:mt-32' : 'md:mt-0'}
-            >
+        {/* Three founders, one row, all portraits on the same baseline.
+
+            The two-founder version staggered the second card down
+            (`i === 1 ? 'md:mt-24 lg:mt-32'`), which read as deliberate with a pair
+            and as misalignment with three: the right-hand portrait sat 96-128px
+            below the others. Removing the offset is the whole fix, so the cards
+            now share one `items-start` row with no per-item margin.
+
+            The `sizes` is derived from the grid, not guessed. A flat pixel number
+            cannot describe this box, because the column is fluid below its cap
+            and only stops growing once `max-w-7xl` is reached. Measured widths:
+            363px at 1440, 355px at 900, 327px at 390. So each band is the grid
+            arithmetic, with `min()` pinning the 3-column band to its 363px
+            ceiling:
+
+              container      = min(1280px, 100vw - padding)
+              3 cols, gap-24 = (100vw - 80 - 2 x 96) / 3 = (100vw - 272) / 3
+              2 cols, gap-24 = (100vw - 80 - 96) / 2     = (100vw - 176) / 2
+              2 cols, gap-16 = (100vw - 48 - 64) / 2     = (100vw - 112) / 2
+              1 col          = 100vw - 48
+
+            A flat `288px` for the middle band, tried first, understated the real
+            box by 67px at 900 -- which makes the browser pick a smaller candidate
+            than the frame can display. Over-declaring only costs a larger file;
+            under-declaring costs sharpness, so the bands are exact.
+
+            Declaring `vw` here was the earlier bug on this section: `45vw`
+            over-selected badly, promising 864px for a 592px box at 1920. And the
+            two-column cap it left behind, `608px`, was itself wrong for the
+            `md:gap-24` it sat in -- 592px, not 608. */}
+        <div className="mt-16 grid grid-cols-1 gap-16 sm:grid-cols-2 md:mt-28 md:gap-24 lg:grid-cols-3">
+          {site.founders.map((founder) => (
+            <article key={founder.name} className="md:mt-0">
               <FadeIn>
-                <ParallaxImage
-                  src={founder.image}
-                  alt={founder.imageAlt}
-                  ratio="portrait"
-                  amount={0.07}
-                  // A pixel cap, not a viewport percentage. The card is half of
-                  // a two-column grid inside a max-w-7xl container with a 64px
-                  // gap, so it settles at 608px and stops growing however wide
-                  // the viewport gets. `45vw` kept climbing past that and
-                  // over-selected: 864px promised for a 608px box at 1920, and
-                  // it overstated at every width except roughly 1024px.
-                  sizes="(min-width: 768px) 608px, calc(100vw - 3rem)"
-                />
+                {founder.image ? (
+                  <ParallaxImage
+                    src={founder.image}
+                    alt={founder.imageAlt ?? ''}
+                    ratio="portrait"
+                    amount={0.07}
+                    sizes="(min-width: 1024px) min(363px, calc((100vw - 272px) / 3)), (min-width: 768px) calc((100vw - 176px) / 2), (min-width: 640px) calc((100vw - 112px) / 2), calc(100vw - 3rem)"
+                  />
+                ) : (
+                  // A founder without a portrait gets a typographic tile rather
+                  // than a broken image. Same 3/4 box, same ink-on-sand palette,
+                  // so the row stays aligned while a photograph is outstanding.
+                  <div
+                    aria-hidden
+                    className="flex aspect-[3/4] items-end bg-ink/[0.06] p-6 md:p-8"
+                  >
+                    <span className="font-display text-[clamp(2.4rem,5vw,3.6rem)] font-light leading-none tracking-[-0.01em] text-ink/25">
+                      {founder.name
+                        .split(' ')
+                        .map((part) => part[0])
+                        .join('')}
+                    </span>
+                  </div>
+                )}
               </FadeIn>
               <div className="mt-8 md:mt-10">
                 <h3 className="font-display text-[clamp(1.8rem,3.4vw,2.9rem)] font-light leading-none text-ink">

@@ -47,17 +47,36 @@ export function Founders() {
                   }
                 >
                   <div className="md:col-span-4">
-                    <div className="relative aspect-[4/5] overflow-hidden bg-sand">
-                      <img
-                        src={lg(founder.image)}
-                        srcSet={srcSetFor(lg(founder.image))}
-                        sizes="(min-width: 768px) 300px, calc(100vw - 3rem)"
-                        alt={founder.imageAlt}
-                        loading="lazy"
-                        decoding="async"
-                        className="block h-full w-full object-cover"
-                      />
-                    </div>
+                    {/* `image` is optional. A founder whose portrait is not yet in
+                        `public/images/studio/` gets a typographic tile in the same
+                        box rather than a broken image — `scripts/verify-image-srcset`
+                        fails the build on a missing file, so the data has to be
+                        able to ship ahead of the photograph. */}
+                    {founder.image ? (
+                      <div className="relative aspect-[4/5] overflow-hidden bg-sand">
+                        <img
+                          src={lg(founder.image)}
+                          srcSet={srcSetFor(lg(founder.image))}
+                          sizes="(min-width: 768px) 300px, calc(100vw - 3rem)"
+                          alt={founder.imageAlt ?? ''}
+                          loading="lazy"
+                          decoding="async"
+                          className="block h-full w-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        aria-hidden
+                        className="flex aspect-[4/5] items-end bg-ink/[0.06] p-8"
+                      >
+                        <span className="font-display text-[clamp(2.2rem,4vw,3.2rem)] font-light leading-none tracking-[-0.01em] text-ink/25">
+                          {founder.name
+                            .split(' ')
+                            .map((part) => part[0])
+                            .join('')}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="md:col-span-8 md:col-start-5">
