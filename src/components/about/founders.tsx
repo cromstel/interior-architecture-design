@@ -51,7 +51,13 @@ export function Founders() {
                         `public/images/studio/` gets a typographic tile in the same
                         box rather than a broken image — `scripts/verify-image-srcset`
                         fails the build on a missing file, so the data has to be
-                        able to ship ahead of the photograph. */}
+                        able to ship ahead of the photograph.
+
+                        The tile was originally `bg-ink/[0.06]` with `text-ink/25`,
+                        which against the ivory section is roughly 1.1:1 and 3.6:1
+                        — it read as a hole in the page, not a placeholder. It now
+                        carries a hairline, a full-ink monogram and a label, so it
+                        looks deliberate. */}
                     {founder.image ? (
                       <div className="relative aspect-[4/5] overflow-hidden bg-sand">
                         <img
@@ -65,11 +71,11 @@ export function Founders() {
                         />
                       </div>
                     ) : (
-                      <div
-                        aria-hidden
-                        className="flex aspect-[4/5] items-end bg-ink/[0.06] p-8"
-                      >
-                        <span className="font-display text-[clamp(2.2rem,4vw,3.2rem)] font-light leading-none tracking-[-0.01em] text-ink/25">
+                      <div className="flex aspect-[4/5] flex-col justify-between border border-ink/15 bg-ink/[0.04] p-8">
+                        <span className="font-sans text-[10px] font-light uppercase tracking-[var(--tracking-meta)] text-stone">
+                          Portrait forthcoming
+                        </span>
+                        <span className="block font-display text-[clamp(2.8rem,5vw,4rem)] font-light leading-none tracking-[-0.01em] text-ink">
                           {founder.name
                             .split(' ')
                             .map((part) => part[0])

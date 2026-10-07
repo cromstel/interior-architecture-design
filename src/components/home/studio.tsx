@@ -68,13 +68,21 @@ export function Studio() {
                   />
                 ) : (
                   // A founder without a portrait gets a typographic tile rather
-                  // than a broken image. Same 3/4 box, same ink-on-sand palette,
-                  // so the row stays aligned while a photograph is outstanding.
-                  <div
-                    aria-hidden
-                    className="flex aspect-[3/4] items-end bg-ink/[0.06] p-6 md:p-8"
-                  >
-                    <span className="font-display text-[clamp(2.4rem,5vw,3.6rem)] font-light leading-none tracking-[-0.01em] text-ink/25">
+                  // than a broken image. Same 3/4 box, so the row stays aligned
+                  // while the photograph is outstanding.
+                  //
+                  // The first version of this tile was invisible: `bg-ink/[0.06]`
+                  // over the `bg-sand` section is about 1.1:1, and `text-ink/25`
+                  // about 3.6:1. It read as a hole in the layout rather than as a
+                  // placeholder. The tile is now a deliberate object -- a sand
+                  // panel with a visible hairline, the monogram at full ink, and
+                  // a meta-label naming the sitter, so it looks like a considered
+                  // card and not like a missing file.
+                  <div className="flex aspect-[3/4] flex-col justify-between border border-ink/15 bg-ink/[0.04] p-6 md:p-8">
+                    <span className="font-sans text-[10px] font-light uppercase tracking-[var(--tracking-meta)] text-stone">
+                      Portrait forthcoming
+                    </span>
+                    <span className="block font-display text-[clamp(3rem,6vw,4.5rem)] font-light leading-none tracking-[-0.01em] text-ink">
                       {founder.name
                         .split(' ')
                         .map((part) => part[0])
