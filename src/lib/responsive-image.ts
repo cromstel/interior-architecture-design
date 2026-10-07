@@ -14,7 +14,7 @@
  * `scripts/generate-image-widths.mjs`. The large tier is not uniform, so its
  * width is looked up in a generated map rather than assumed.
  */
-import { LARGE_TIER_WIDTHS } from '@/lib/image-large-tiers'
+import { TIER_WIDTHS } from '@/lib/image-tier-widths'
 
 const AVIF_RE = /-sm\.avif$/i
 
@@ -50,6 +50,24 @@ function smallSrc(src: string): string {
 }
 
 /**
+ * The real pixel width of a candidate, from the generated map.
+ *
+ * The map is the record of the truth; the conventional 800/1200 constants are
+ * only a fallback for a path the generator has not seen. Every descriptor this
+ * module emits has to equal the file's actual width or the browser mis-selects,
+ * and `scripts/verify-image-srcset.mjs` fails the build when they disagree.
+ *
+ * The constants used to be the source of truth for the small and base tiers,
+ * which held for all 162 of those assets. It stopped holding when the founder
+ * portraits were cropped square: a square crop can only be as wide as its source
+ * is tall, so Claire citgroup's base tier is 798px rather than 1200px. Reading a
+ * hardcoded 1200w for that file would have shipped a wrong descriptor.
+ */
+function widthOf(path: string, fallback: number): number {
+  return TIER_WIDTHS[path] ?? fallback
+}
+
+/**
  * Builds a `srcset` covering every tier that applies to `src`.
  *
  * `src` is normally the resolved (possibly `-lg`) path. When it is not the
@@ -58,16 +76,19 @@ function smallSrc(src: string): string {
  *
  * Every descriptor is the file's real pixel width, which is what lets the
  * browser pick correctly. A single hardcoded `2000w` for the large tier
- * mis-declared 13 of the 19 `-lg` assets, which are 2400px unless
- * `shrink-oversized-avif.mjs` capped them at 2000px.
+ * mis-declared 13 of the 19 `-lg` assets, and hardcoded `1200w` for the base
+ * tier would mis-declare the square-cropped founder portraits.
  */
 export function srcSetFor(src: string): string | undefined {
   const base = baseSrc(src)
   const small = smallSrc(src)
-  const parts = [`${small} ${SMALL_WIDTH}w`, `${base} ${BASE_WIDTH}w`]
+  const parts = [
+    `${small} ${widthOf(small, SMALL_WIDTH)}w`,
+    `${base} ${widthOf(base, BASE_WIDTH)}w`,
+  ]
 
   if (src !== base) {
-    const large = LARGE_TIER_WIDTHS[src]
+    const large = TIER_WIDTHS[src]
     if (!large && process.env.NODE_ENV !== 'production' && !warned) {
       warned = true
       console.warn(
