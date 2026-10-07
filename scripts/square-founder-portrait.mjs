@@ -9,19 +9,31 @@
  * the three faces sat at different scales in the same row. Matching the aspect
  * makes the crop identical for all three.
  *
- * Why not force them all to 1200x1200: a square crop can only be as wide as its
- * source is tall. Claire citgroup's source is 1200x798, so her largest honest
- * square is 798x798 and her base tier becomes 798w, not 1200w. Upscaling to
- * 1200 would soften her by 1.5x, which is worse than a differing descriptor.
- * `srcSetFor` now reads real widths from `image-tier-widths.ts` for exactly this
- * reason, and `verify-image-srcset.mjs` checks the declared width against the
- * file.
+ * Why the target is exactly 1200x1200 and 800x800: all three founders are to
+ * carry the same dimensions as the Chief Executive's, and a uniform set is
+ * easier to reason about than one that quietly differs per portrait.
+ *
+ * Getting there means enlarging, and that is worth stating plainly rather than
+ * glossing. A square crop can only be as wide as its source is tall, so Claire's
+ * largest honest square is 798px and Ethan's is 865px; reaching 1200 scales them
+ * by 1.50x and 1.39x. The alternative -- padding the short side out with
+ * synthesised background -- invents content instead of pixels, and a seam across
+ * a photographic backdrop is far more visible than softness.
+ *
+ * The softness costs nothing in practice, and that is arithmetic rather than
+ * reassurance. The card renders 363px wide, so the largest any file is displayed
+ * at is 363 x 2 (DPR 2) = 726px. Claire at 798px and Ethan at 865px both already
+ * exceed that before scaling, so neither gains sharpness from the resize and
+ * neither loses detail the page could show. The extra pixels buy file
+ * uniformity, which is what was asked for, and nothing visible is degraded to
+ * get it.
  *
  * The crop is biased upward because faces sit high in both portraits; a centred
  * square crop of a 1200x798 frame moves 798px of width across a face that
  * occupies the middle of the original.
  *
- * The source is not re-encoded beyond the crop and the tier resize: both existing
+ * Both tiers come from one crop, so they cannot drift apart in framing. The
+ * source is not re-encoded beyond the crop and the tier resize: both existing
  * files are already AVIF, and re-encoding an already-lossy AVIF compounds
  * artefacts.
  *
@@ -66,17 +78,23 @@ function squareCrop(meta) {
 }
 
 /**
- * Crops to square then resizes to the tier width, never enlarging.
+ * Crops to square, then resizes to an exact square of `width` pixels.
  *
- * Both tiers come from the base file rather than from the existing `-sm`, so the
- * two cannot drift apart in framing. The `-sm` is regenerated from the same crop
- * box, which is what keeps the two tiers pixel-aligned.
+ * `fit: 'fill'` with both dimensions set is what makes the result exactly
+ * 1200x1200 rather than "as wide as it can be". `withoutEnlargement` is
+ * deliberately absent: for a portrait whose square is smaller than the tier — the
+ * 798px case — it silently returns the input unchanged, which is how both tiers
+ * once came out byte-identical.
+ *
+ * Lanczos3 rather than the default, because this is the one path in the project
+ * that enlarges and the kernel matters when it does. Both tiers come from the
+ * same crop box, so they cannot drift apart in framing.
  */
 async function render(input, width) {
   const meta = await sharp(input).metadata()
   return sharp(input)
     .extract(squareCrop(meta))
-    .resize({ width, withoutEnlargement: true })
+    .resize({ width, height: width, fit: 'fill', kernel: 'lanczos3' })
     .avif(AVIF)
     .toBuffer()
 }
@@ -84,40 +102,22 @@ async function render(input, width) {
 const meta = await sharp(basePath).metadata()
 const box = squareCrop(meta)
 
-/**
- * The small tier for a square crop.
- *
- * The library's convention is 1200w base -> 800w small, which is exactly two
- * thirds. Applying the same ratio keeps a square portrait on the same ladder
- * instead of inventing a second rule.
- *
- * It matters because of what a square crop does to the numbers. Claire's source
- * is 1200x798, so her square is 798px and a 800w small tier cannot be produced
- * without enlarging -- `withoutEnlargement` silently returns the base unchanged,
- * and both tiers came out as byte-identical 798x798 files, 65 KB where 32.5 KB
- * would do, with a srcset offering the browser the same image twice. Two thirds
- * of 798 is 532, which is a real second candidate.
- *
- * Capped at the conventional 800 so a full-size base still gets 800, not more.
- */
-function smallTierFor(baseWidth) {
-  const twoThirds = Math.round((baseWidth * 2) / 3 / 8) * 8
-  return Math.min(SMALL_WIDTH, twoThirds)
-}
-
+// The small tier is the library convention: 1200w base, 800w small. Both are
+// applied exactly, so all three founders end up on identical dimensions.
 const baseBuf = await render(readFileSync(basePath), BASE_WIDTH)
-const smallWidth = smallTierFor(box.width)
-const smallBuf = await render(readFileSync(basePath), smallWidth)
+const smallBuf = await render(readFileSync(basePath), SMALL_WIDTH)
 
 writeFileSync(basePath, baseBuf)
 writeFileSync(smallPath, smallBuf)
 
 const kb = (b) => Math.round((b.length / 1024) * 10) / 10
+const scale = BASE_WIDTH / box.width
 console.log(`${slug}`)
 console.log(`  source        : ${meta.width}x${meta.height}`)
 console.log(`  crop          : ${box.width}x${box.height} at ${box.left},${box.top}  (bias ${BIAS})`)
-console.log(`  wrote base    : ${kb(baseBuf)} KB  ${box.width}w`)
-console.log(`  wrote -sm     : ${kb(smallBuf)} KB  ${smallWidth}w  (two thirds, capped at ${SMALL_WIDTH})`)
+console.log(`  scale to base : ${scale.toFixed(2)}x${scale === 1 ? '' : '  (enlarged)'}`)
+console.log(`  wrote base    : ${kb(baseBuf)} KB  ${BASE_WIDTH}x${BASE_WIDTH}`)
+console.log(`  wrote -sm     : ${kb(smallBuf)} KB  ${SMALL_WIDTH}x${SMALL_WIDTH}`)
 
 for (const [label, p] of [['base', basePath], ['-sm', smallPath]]) {
   const m = await sharp(p).metadata()
