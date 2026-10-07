@@ -97,10 +97,14 @@ export const site = {
       bio: 'Samuel runs the studio: the commissions, the fee structure, who is engaged and on what terms, and the pace the work is allowed to take. He came to architecture from construction and site management, which is why he is the one who decides what a client is actually buying when a drawing is finished. He is accountable for the studio being the same thing in ten years as it is this year.',
       focus: ['Client & commissions', 'Fee & contract', 'Site & delivery', 'Studio direction'],
       note: 'The work has to survive the people who commissioned it.',
-      // No portrait yet. `Founder.image` is optional and both founders sections
-      // fall back to a typographic tile, so the entry can ship ahead of the
-      // photograph. The image path belongs in `public/images/studio/` as
-      // founders-samuel-lamptey.avif, plus the -sm tier, before this is set.
+      // Supplied as a 1254px cut-out on transparency and prepared by
+      // `scripts/add-founder-portrait.mjs`, which composites it onto a studio
+      // backdrop and desaturates it to match Ethan Vale's portrait. The blue
+      // blazer and tan shirt measured 39% saturation and would otherwise have
+      // been the only saturated thing on the page. Both width tiers exist and
+      // there is no `-lg`, the same as the other two portraits.
+      image: '/images/studio/founders-samuel-lamptey.avif',
+      imageAlt: 'Portrait of Samuel Lamptey, Chief Executive of Citgroup & Vale, in black and white.',
     },
   ] satisfies Founder[],
   story: 'Founded in New York in 2016, citgroup & Vale works with a small collaborative team of architects, interior designers, craftspeople, fabricators, artists, and builders.',
