@@ -96,7 +96,7 @@ export default function AboutPage() {
           <dl className="mt-10 grid gap-x-10 gap-y-8 md:grid-cols-4">
             {studioStory.practice.map((row) => (
               <div key={row.label}>
-                <dt className="meta-label">{row.label}</dt>
+                <dt className="meta-label-sand">{row.label}</dt>
                 <dd className="mt-3 font-display text-lg font-light leading-snug text-ink">
                   {row.value}
                 </dd>

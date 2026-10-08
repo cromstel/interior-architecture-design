@@ -53,6 +53,8 @@ http
     // Fingerprinted build output is immutable; HTML revalidates each visit.
     if (p.startsWith('/_next/static/')) {
       headers['Cache-Control'] = 'public, max-age=31536000, immutable';
+    } else if (ext === '.avif' || ext === '.woff2') {
+      headers['Cache-Control'] = 'public, max-age=31536000, immutable';
     } else if (ext === '.html') {
       headers['Cache-Control'] = 'public, max-age=0, must-revalidate';
     } else {
