@@ -29,8 +29,8 @@ export function Hero() {
           length of the animation. Offsets still animate, but the text is in
           the first paint. */}
       <motion.div
-        initial={reduced ? false : { y: 16 }}
-        animate={{ y: 0 }}
+        initial={reduced ? false : { y: 16, scale: 0.99 }}
+        animate={{ y: 0, scale: 1 }}
         transition={{ duration: 1.1, ease: EASE }}
         className="relative z-10 flex h-full flex-col justify-between px-6 pb-16 pt-28 md:px-10 md:pt-32"
       >

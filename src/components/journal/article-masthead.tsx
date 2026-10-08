@@ -51,8 +51,8 @@ export function ArticleMasthead({
 
       <motion.div
         className="relative z-10 flex h-full flex-col justify-end px-6 pb-10 pt-28 md:px-10 md:pb-14"
-        initial={reduced ? false : { y: 20 }}
-        animate={{ y: 0 }}
+        initial={reduced ? false : { y: 20, scale: 0.98 }}
+        animate={{ y: 0, scale: 1 }}
         transition={{ duration: 1, ease: EASE, delay: 0.15 }}
       >
         {/* Left-anchored column, so the excerpt keeps a readable measure. */}

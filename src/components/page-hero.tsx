@@ -66,8 +66,8 @@ export function PageHero({
 
         <motion.div
           className="relative z-10 flex h-full flex-col justify-end px-6 pb-10 pt-28 md:px-10 md:pb-14"
-          initial={reduced ? false : { y: 22 }}
-          animate={{ y: 0 }}
+          initial={reduced ? false : { y: 22, scale: 0.98 }}
+          animate={{ y: 0, scale: 1 }}
           transition={{ duration: 1, ease: EASE, delay: 0.15 }}
         >
           {/* `mx-auto max-w-7xl` is the same container every body section uses,

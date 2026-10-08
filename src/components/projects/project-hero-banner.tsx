@@ -45,8 +45,8 @@ export function ProjectHeroBanner({
           the first paint rather than waiting on hydration. */}
       <motion.div
         className="relative z-10 flex h-full flex-col justify-end px-6 pb-8 pt-28 md:px-10 md:pb-12"
-        initial={reduced ? false : { y: 22 }}
-        animate={{ y: 0 }}
+        initial={reduced ? false : { y: 22, scale: 0.98 }}
+        animate={{ y: 0, scale: 1 }}
         transition={{ duration: 1, ease: EASE, delay: 0.15 }}
       >
         {/* The plate is anchored to the left edge, so the scrim falls off
