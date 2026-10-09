@@ -1,0 +1,13 @@
+# Deployed build version tracking
+# The VERSION file in the repo root references the commit hash of the deployed
+# build so the archive (interior-design-site.zip) and the live site can be
+# traced back to source in a single step.
+
+VERSION=a081f1d
+DATE=2026-10-09
+SITE=interior-design.cromstelit.com
+BUCKET=interior-design-site.zip
+ARCHIVE_SIZE_MB=29.52
+BUILD_VERIFY=passed (exit=0, descriptors/preload/h1/canonical/links/checks clean)
+DEPLOY_STATUS=accepted (archive uploaded TUS 201/204, endpoint hosting_websites_deploy-static-site-archive returned Request accepted)
+LIVE_CHECKS=homepage_scale099=true, about_meta_label_sand=true, sitemap_22=all_200, console_418=false, preload_duplicate_harmless=true

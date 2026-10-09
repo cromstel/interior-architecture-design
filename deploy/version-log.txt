@@ -1,0 +1,5 @@
+# Deploy version log
+# Tracks each zip archive built from the repo and deployed to interior-design.cromstelit.com.
+# Format: commit_hash | zip_path | archive_size_MB | deploy_endpoint_result | live_verification_notes
+
+a081f1d | C:\projects\interior-design-site.zip | 29.52 | Request accepted (archive uploaded TUS 201/204) | scale(0.99) verified, meta-label-sand verified, sitemap 22 URLs 200, build exit=0, a11y=100 (after meta-label-sand fix), preload: 25 heroes agree, duplicate preload: 21 (Next 16.3.6, harmless), #418: absent, console warnings: 0
